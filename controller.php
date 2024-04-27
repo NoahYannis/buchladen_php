@@ -31,7 +31,7 @@ if(!empty($_POST['sql_input'])) {
     /*
     Hier wird mithilfe von Regex (Regular Expressions) der Tabellenname aus dem SQL-Statement
 	herausgefiltert, um den zugehörigen Tabellenkopf zu generieren.
-    Das Muster beginnt mit "buchladen" (dem Datenbanknamen), gefolgt von einem Punkt (.) und
+    Das Muster beginnt mit "buchladen" (dem Datenbanknamen), gefolgt von einem beliebigen Zeichen (.) und
     einem oder mehreren alphanumerischen Zeichen (dem gesuchten Tabellennamen).
 	Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
     */
