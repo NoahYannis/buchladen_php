@@ -21,18 +21,28 @@ if(!empty($_POST['Button'])){
 	$table = $_POST['Button'];
 	$_SESSION['current_table'] = $table;
 	$tableData = getSelectedTableData($table);											
-	$htmlCode = buildHtml($tableData, $table);	
-	echo $_SESSION['current_table'];										
+	$htmlCode = buildHtml($tableData, $table);									
 	echo $htmlCode;																	
 }
 
 if(!empty($_POST['sql_input'])) {
-	$statement = $_POST['sql_input'];
-	$tableData = executeUserSQL($statement);
-	$htmlCode = buildHtml($tableData, $_SESSION['current_table']);												
-	echo $htmlCode;	
-}
+    $statement = $_POST['sql_input'];    
 
+    /*
+    Hier wird mithilfe von Regex (Regular Expressions) der Tabellenname aus dem SQL-Statement
+	herausgefiltert, um den zugehörigen Tabellenkopf zu generieren.
+    Das Muster beginnt mit "buchladen" (dem Datenbanknamen), gefolgt von einem Punkt (.) und
+    einem oder mehreren alphanumerischen Zeichen (dem gesuchten Tabellennamen).
+	Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
+    */
+
+    $pattern = '/buchladen\.(\w+)/';
+    preg_match($pattern, $statement, $matches);
+    $tableName = isset($matches[1]) ? $matches[1] : null;	
+    $tableData = executeUserSQL($statement);
+    $htmlCode = buildHtml($tableData, $tableName);                                                
+    echo $htmlCode;    
+}
 
 
 

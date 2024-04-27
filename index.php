@@ -6,16 +6,16 @@
 
 		
 		<form action="" method="post">
-			<button type="submit" name="Button" class="button" value="autoren">Autoren</button>
-			<button type="submit" name="Button" class="button" value="buecher">Bücher</button>
-			<button type="submit" name="Button" class="button" value="lieferanten">Lieferanten</button>
-			<button type="submit" name="Button" class="button" value="orte">Orte</button>
-			<button type="submit" name="Button" class="button" value="sparten">Sparten</button>
-			<button type="submit" name="Button" class="button" value="verlage">Verlage</button>
+			<button type="submit" name="Button" class="button" value="autoren">autoren</button>
+			<button type="submit" name="Button" class="button" value="buecher">buecher</button>
+			<button type="submit" name="Button" class="button" value="lieferanten">lieferanten</button>
+			<button type="submit" name="Button" class="button" value="orte">orte</button>
+			<button type="submit" name="Button" class="button" value="sparten">sparten</button>
+			<button type="submit" name="Button" class="button" value="verlage">verlage</button>
 			
-			<button type="submit" name="Button" class="button" value="autoren_has_buecher">Autoren-ID ⇔ Buecher-ID</button>
-			<button type="submit" name="Button" class="button" value="buecher_has_sparten">Buch-ID ⇔ Sparten-ID</button>
-			<button type="submit" name="Button" class="button" value="buecher_has_lieferanten">Buch-ID ⇔ Lieferanten-ID</button>
+			<button type="submit" name="Button" class="button" value="autoren_has_buecher">autoren_has_buecher</button>
+			<button type="submit" name="Button" class="button" value="buecher_has_sparten">buecher_has_sparten</button>
+			<button type="submit" name="Button" class="button" value="buecher_has_lieferanten">buecher_has_lieferanten</button>
 		</form>
 
 		<form action="" method="post">
