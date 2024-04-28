@@ -44,28 +44,70 @@ if(!empty($_POST['sql_input'])) {
     echo $htmlCode;    
 }
 
-if(!empty($_POST['addEntry'])) {
-	generateNewEntryForm();
+if (!empty($_POST['addEntry'])) {
+    generateNewEntryForm();
 }
 
+if (isset($_POST['confirmNewEntry'])) {
+    echo "Der Button 'confirmNewEntry' wurde geklickt!";
+    addNewEntry();
+}
 
-function generateNewEntryForm() {
-	$formHtml = "";
+function addNewEntry() {
+    global $conn;
+    $tableName = $_SESSION['current_table'];
+    $columnNames = [];
+    $columnValues = [];
 
-	$tableColumns = getTableColumns($_SESSION['current_table']);
-	$columnNames = [];
+    $tableColumns = getTableColumns($tableName);
 
     while ($row = $tableColumns->fetch_assoc()) {
-       $columnNames[] = $row['COLUMN_NAME'];
+        $columnNames[] = $row['COLUMN_NAME'];
     }
 
-	foreach ($columnNames as $columnName) {
+    $statement = "INSERT INTO buchladen.$tableName (";
+    $values = "VALUES (";
+    foreach ($columnNames as $columnName) {
+        // Überprüfe, ob der Wert für dieses Feld im POST-Array vorhanden ist
+        if (isset($_POST[$columnName])) {
+            $columnValue = $_POST[$columnName];
+            // Füge den Spaltennamen und den Wert dem SQL-Statement hinzu
+            $statement .= "$columnName, ";
+            $values .= "'$columnValue', ";
+        }
+    }
+    // Entferne das letzte Komma und Leerzeichen von den Strings
+    $statement = rtrim($statement, ", ") . ") ";
+    $values = rtrim($values, ", ") . ")";
+    // Füge die Spaltennamen und Werte zum endgültigen SQL-Statement hinzu
+    $finalStatement = $statement . $values;
+    
+    // Ausführen des SQL-Statements (falls benötigt)
+    $conn->query($finalStatement);
+    
+    echo $finalStatement; // Zum Testen, Ausgabe des SQL-Statements
+}
+
+function generateNewEntryForm() {
+    $tableColumns = getTableColumns($_SESSION['current_table']);
+    $columnNames = [];
+    
+    while ($row = $tableColumns->fetch_assoc()) {
+        $columnNames[] = $row['COLUMN_NAME'];
+    }
+    
+    $formHtml = "<form method='post'>";
+    foreach ($columnNames as $columnName) {
         $formHtml .= "<label for=\"$columnName\">$columnName:</label>";
         $formHtml .= "<input type=\"text\" id=\"$columnName\" name=\"$columnName\"><br>";
     }
 
+    $formHtml .= "<button type='submit' name='confirmNewEntry'>Bestätigen</button>";
+    $formHtml .= "</form>";
+
     echo $formHtml;
 }
+
 
 
 function getSelectedTableData($selectedTable) {
