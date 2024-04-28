@@ -21,7 +21,8 @@
 		<form action="" method="post">
 			<label id="sql_statement" for="sql_input">SQL-Statement eingeben:</label><br>
 			<input name="sql_input" type="text"/> 	
-			<button type="submit" class="button" name="executeUserSql">Ausführen</button>
+			<button type="submit" class="Button" name="executeUserSql">Ausführen</button>
+			<button type="submit" name="addEntry" class="Button" value="addEntry">Eintrag hinzufügen</button>
 		</form>
 
 	<?php include 'controller.php'; ?>

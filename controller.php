@@ -44,6 +44,28 @@ if(!empty($_POST['sql_input'])) {
     echo $htmlCode;    
 }
 
+if(!empty($_POST['addEntry'])) {
+	generateNewEntryForm();
+}
+
+
+function generateNewEntryForm() {
+	$formHtml = "";
+
+	$tableColumns = getTableColumns($_SESSION['current_table']);
+	$columnNames = [];
+
+    while ($row = $tableColumns->fetch_assoc()) {
+       $columnNames[] = $row['COLUMN_NAME'];
+    }
+
+	foreach ($columnNames as $columnName) {
+        $formHtml .= "<label for=\"$columnName\">$columnName:</label>";
+        $formHtml .= "<input type=\"text\" id=\"$columnName\" name=\"$columnName\"><br>";
+    }
+
+    echo $formHtml;
+}
 
 
 function getSelectedTableData($selectedTable) {
