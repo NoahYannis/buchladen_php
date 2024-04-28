@@ -156,6 +156,8 @@ function buildHtml($data, $table){
             foreach($row as $value){
                 $htmlString .= '<td>' . $value . '</td>';
             }
+            $htmlString .= '<td><button class="Button">Bearbeiten</button></td>';
+            $htmlString .= '<td><button class="Button">Löschen</button></td>';
             $htmlString .= '</tr>';
         }
     }
