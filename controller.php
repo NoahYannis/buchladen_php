@@ -48,10 +48,77 @@ if (!empty($_POST['addEntry'])) {
     generateNewEntryForm();
 }
 
+if(!empty($_POST['updateButton'])) {
+    $_SESSION['updateButton'] = $_POST['updateButton'];
+    $tableName = $_SESSION['current_table'];
+    $columnNames = [];
+    $columnValues = [];
+
+    $tableColumns = getTableColumns($tableName);
+
+    while ($row = $tableColumns->fetch_assoc()) {
+        $columnNames[] = $row['COLUMN_NAME'];
+    }
+
+    $formHtml = "<form method='post'>";
+    foreach ($columnNames as $columnName) {
+        $formHtml .= "<label for=\"$columnName\">$columnName:</label>";
+        $formHtml .= "<input type=\"text\" id=\"$columnName\" name=\"$columnName\"><br>";
+    }
+
+    $formHtml .= "<button type='submit' name='confirmUpdateEntry'>Bestätigen</button>";
+    $formHtml .= "</form>";
+
+    echo $formHtml;
+}
+
+if (isset($_POST['confirmUpdateEntry'])) {
+    updateEntry();
+}
+
 if (isset($_POST['confirmNewEntry'])) {
-    echo "Der Button 'confirmNewEntry' wurde geklickt!";
     addNewEntry();
 }
+
+function updateEntry() {
+    global $conn;
+    $tableName = $_SESSION['current_table'];
+    $columnNames = [];
+    $columnValues = [];
+
+    $tableColumns = getTableColumns($tableName);
+
+    while ($row = $tableColumns->fetch_assoc()) {
+        $columnNames[] = $row['COLUMN_NAME'];
+    }
+
+    // Erzeuge das UPDATE-Statement mit SET-Klausel
+    $statement = "UPDATE buchladen.$tableName SET ";
+
+    foreach ($columnNames as $columnName) {
+        // Überprüfe, ob der Spaltenname kein reservierter Name wie 'updateButton' ist
+        if ($columnName !== 'updateButton') {
+            // Überprüfe, ob ein Wert für diesen Spaltennamen im POST-Array vorhanden ist
+            if (isset($_POST[$columnName])) {
+                // Hole den Wert aus dem POST-Array
+                $columnValue = $_POST[$columnName];
+                // Füge den Spaltennamen und den Wert der SET-Klausel hinzu
+                $statement .= "$columnName = '$columnValue', ";
+            }
+        }
+    }
+
+    // Entferne das letzte Komma und Leerzeichen von der SET-Klausel
+    $statement = rtrim($statement, ", ");
+
+    // Füge die WHERE-Klausel hinzu, um die zu aktualisierende Zeile zu identifizieren
+    $primaryKey = $columnNames[0];
+    $statement .= " WHERE $primaryKey = '{$_SESSION['updateButton']}'"; // Stellen Sie sicher, dass das schließende Anführungszeichen hinzugefügt wurde
+    echo "Statement:" . $statement;
+    // Ausführen des SQL-Statements
+    $conn->query($statement);
+}
+ 
 
 function addNewEntry() {
     global $conn;
@@ -139,32 +206,42 @@ function getTableColumns($table) {
 // Function to build the html code from the database data
 function buildHtml($data, $table){
 
-	$headers = getTableColumns($table);
+    $headers = getTableColumns($table);
 
-	$htmlString = '<table>'; 
-	
-	$htmlString .= '<tr>'; 
-	while($row = $headers->fetch_assoc()) {
-		$htmlString .= "<th>{$row["COLUMN_NAME"]}</th>"; 
-	}
+    $htmlString = '<form method="post">'; // Formular hinzugefügt
+    $htmlString .= '<table>'; 
+    $htmlString .= '<tr>'; 
 
-	$htmlString .= '</tr>'; 
+    while($row = $headers->fetch_assoc()) {
+        $htmlString .= "<th>{$row["COLUMN_NAME"]}</th>"; 
+    }
+    
+    $htmlString .= '</tr>'; 
     
     if($data){
         foreach($data as $row){
+            $primaryKey = reset($row);
             $htmlString .= '<tr>';
-            foreach($row as $value){
+            foreach($row as $key => $value){
                 $htmlString .= '<td>' . $value . '</td>';
             }
-            $htmlString .= '<td><button class="Button">Bearbeiten</button></td>';
+
+            // Den Namen des "Bearbeiten"-Buttons auf den Wert des Primärschlüssels setzen
+            $htmlString .= "<td><button type=\"submit\" name=\"updateButton\" value=\"$primaryKey\" class=\"Button\">Bearbeiten</button></td>";
             $htmlString .= '<td><button class="Button">Löschen</button></td>';
             $htmlString .= '</tr>';
         }
     }
-
+    
     $htmlString .= '</table>'; 
+    $htmlString .= '</form>'; // Formular hinzugefügt
 
     return $htmlString;
+}
+
+
+function editEntry() {
+    global $conn;
 }
 
 
