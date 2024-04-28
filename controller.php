@@ -48,6 +48,31 @@ if (!empty($_POST['addEntry'])) {
     generateNewEntryForm();
 }
 
+if (!empty($_POST['deleteButton'])) {
+    $_SESSION['deleteButton'] = $_POST['deleteButton'];
+    echo $_SESSION['deleteButton'];
+    deleteEntry();
+}
+
+function deleteEntry() {
+    global $conn;
+
+    $tableColumnsResult = getTableColumns($_SESSION['current_table']);
+    $firstRow = $tableColumnsResult->fetch_assoc();
+    $primaryKey = $firstRow['COLUMN_NAME'];
+    
+    $statement = "DELETE FROM buchladen.{$_SESSION['current_table']} WHERE $primaryKey = {$_SESSION['deleteButton']}";
+
+    $result = $conn->query($statement);
+
+    if ($result) {
+        echo "Der Eintrag wurde erfolgreich gelöscht!";
+    } else {
+        echo "Fehler beim Löschen des Eintrags: " . $conn->error;
+    }
+}
+
+
 if(!empty($_POST['updateButton'])) {
     $_SESSION['updateButton'] = $_POST['updateButton'];
     $tableName = $_SESSION['current_table'];
@@ -228,7 +253,7 @@ function buildHtml($data, $table){
 
             // Den Namen des "Bearbeiten"-Buttons auf den Wert des Primärschlüssels setzen
             $htmlString .= "<td><button type=\"submit\" name=\"updateButton\" value=\"$primaryKey\" class=\"Button\">Bearbeiten</button></td>";
-            $htmlString .= '<td><button class="Button">Löschen</button></td>';
+            $htmlString .= "<td><button type=\"submit\" name=\"deleteButton\" value=\"$primaryKey\" class=\"Button\">Löschen</button></td>";
             $htmlString .= '</tr>';
         }
     }
