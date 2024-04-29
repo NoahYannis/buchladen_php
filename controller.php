@@ -28,6 +28,7 @@ if(!empty($_POST['sql_input'])) {
     $statement = $_POST['sql_input'];   
     $tableData = executeUserSQL($statement);
     $tableName = extractTableNameFromSQL($statement);
+    $_SESSION['current_table'] = $tableName;
     $htmlCode = buildHtml($tableData, $tableName);                                                
     echo $htmlCode;    
 }
@@ -56,7 +57,8 @@ function extractTableNameFromSQL($statement) {
 
 
 if (!empty($_POST['addEntry'])) {
-    generateNewEntryForm();
+    $table = $_SESSION['current_table'];
+    generateForm($table, 'confirmNewEntry');
 }
 
 if (!empty($_POST['deleteButton'])) {
@@ -65,9 +67,9 @@ if (!empty($_POST['deleteButton'])) {
     deleteEntry($_SESSION['current_table'], $tablePrimaryKey, $entry);
 }
 
-function deleteEntry($table, $tablePrimaryKey, $entry) {
+function deleteEntry($table, $primaryKey, $entry) {
     global $conn;
-    $statement = "DELETE FROM buchladen.$table WHERE $tablePrimaryKey = '$entry'";
+    $statement = "DELETE FROM buchladen.$table WHERE $primaryKey = '$entry'";
     $result = $conn->query($statement);
 
     if ($result) {
@@ -78,30 +80,26 @@ function deleteEntry($table, $tablePrimaryKey, $entry) {
 }
 
 
-
 if(!empty($_POST['updateButton'])) {
     $_SESSION['updateButton'] = $_POST['updateButton'];
-    $tableName = $_SESSION['current_table'];
-    $columnNames = [];
-    $columnValues = [];
+    $table = $_SESSION['current_table'];
+    generateForm($table, 'confirmUpdateEntry');
+}
 
-    $tableColumns = getTableColumns($tableName);
-
-    while ($row = $tableColumns->fetch_assoc()) {
-        $columnNames[] = $row['COLUMN_NAME'];
-    }
+function generateForm($table, $postButtonName) {
+    $columnNames = getColumnNames($table);
 
     $formHtml = "<form method='post'>";
     foreach ($columnNames as $columnName) {
         $formHtml .= "<label for=\"$columnName\">$columnName:</label>";
         $formHtml .= "<input type=\"text\" id=\"$columnName\" name=\"$columnName\"><br>";
     }
-
-    $formHtml .= "<button type='submit' name='confirmUpdateEntry'>Bestätigen</button>";
+    $formHtml .= "<button type='submit' name=\"$postButtonName\">Bestätigen</button>";
     $formHtml .= "</form>";
 
     echo $formHtml;
 }
+
 
 if (isset($_POST['confirmUpdateEntry'])) {
     updateEntry();
@@ -111,17 +109,31 @@ if (isset($_POST['confirmNewEntry'])) {
     addNewEntry();
 }
 
+function getColumnNames($tableName) {
+    global $conn;
+    $columnNames = [];
+    
+    $SQL = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$tableName'";
+
+    try 
+    {
+        $result = $conn->query($SQL);	
+
+        while ($row = $result->fetch_assoc()) {             
+           $columnNames[] = $row['COLUMN_NAME'];
+         }
+            
+    } catch (Exception $e) {
+        echo "Fehler beim Abrufen der Spaltennamen: {$e->getMessage()}";
+    }
+    return $columnNames;
+}
+
+
 function updateEntry() {
     global $conn;
     $tableName = $_SESSION['current_table'];
-    $columnNames = [];
-    $columnValues = [];
-
-    $tableColumns = getTableColumns($tableName);
-
-    while ($row = $tableColumns->fetch_assoc()) {
-        $columnNames[] = $row['COLUMN_NAME'];
-    }
+    $columnNames = getColumnNames($tableName);
 
     // Erzeuge das UPDATE-Statement mit SET-Klausel
     $statement = "UPDATE buchladen.$tableName SET ";
@@ -146,7 +158,7 @@ function updateEntry() {
     $primaryKey = $columnNames[0];
     $primaryKey = getPrimaryKeyName($_SESSION['current_table']);
     $statement .= " WHERE $primaryKey = '{$_SESSION['updateButton']}'"; // Stellen Sie sicher, dass das schließende Anführungszeichen hinzugefügt wurde
-    echo "Statement:" . $statement;
+    echo "Statement: " . $statement;
     // Ausführen des SQL-Statements
     $conn->query($statement);
 }
@@ -155,14 +167,7 @@ function updateEntry() {
 function addNewEntry() {
     global $conn;
     $tableName = $_SESSION['current_table'];
-    $columnNames = [];
-    $columnValues = [];
-
-    $tableColumns = getTableColumns($tableName);
-
-    while ($row = $tableColumns->fetch_assoc()) {
-        $columnNames[] = $row['COLUMN_NAME'];
-    }
+    $columnNames = getColumnNames($tableName);
 
     $statement = "INSERT INTO buchladen.$tableName (";
     $values = "VALUES (";
@@ -187,27 +192,6 @@ function addNewEntry() {
     echo $finalStatement; // Zum Testen, Ausgabe des SQL-Statements
 }
 
-function generateNewEntryForm() {
-    $tableColumns = getTableColumns($_SESSION['current_table']);
-    $columnNames = [];
-    
-    while ($row = $tableColumns->fetch_assoc()) {
-        $columnNames[] = $row['COLUMN_NAME'];
-    }
-    
-    $formHtml = "<form method='post'>";
-    foreach ($columnNames as $columnName) {
-        $formHtml .= "<label for=\"$columnName\">$columnName:</label>";
-        $formHtml .= "<input type=\"text\" id=\"$columnName\" name=\"$columnName\"><br>";
-    }
-
-    $formHtml .= "<button type='submit' name='confirmNewEntry'>Bestätigen</button>";
-    $formHtml .= "</form>";
-
-    echo $formHtml;
-}
-
-
 
 function getSelectedTableData($selectedTable) {
 	global $conn;
@@ -222,7 +206,6 @@ function getSelectedTableData($selectedTable) {
   
 	return $tableData;	
 }
-
 
 
 // Get all column names of a table
@@ -272,11 +255,6 @@ function buildHtml($data, $table){
 }
 
 
-function editEntry() {
-    global $conn;
-}
-
-
 function executeUserSQL($statement) {
     global $conn;
 
@@ -296,7 +274,6 @@ function executeUserSQL($statement) {
         return null;
     }
 }
-
 
 
 function getPrimaryKeyName($table) {
