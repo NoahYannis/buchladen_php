@@ -1,5 +1,6 @@
 <?php
 
+// Informationen über die aktuelle Sitzung speichern (z.B welche Tabelle aktiv ist).
 session_start(); 
 
 // Server Settings
@@ -16,18 +17,35 @@ if ($conn->connect_error) {
 }
 
 
-// Check, if a Button was pressed. If true, build a table from database data.
-if(!empty($_POST['Button'])){
-	$table = $_POST['Button'];
-	$_SESSION['current_table'] = $table;
-	$tableData = getSelectedTableData($table);											
-	$htmlCode = buildHtml($tableData, $table);									
-	echo $htmlCode;																	
+if (!empty($_POST['Button'])) {
+    $table = $_POST['Button'];
+    $_SESSION['current_table'] = $table;
+    displayTable($table);
 }
 
-if(!empty($_POST['sql_input'])) {
-    $statement = $_POST['sql_input'];    
+function displayTable($table) {
+    $tableData = getSelectedTableData($table);
+    $htmlCode = buildHtml($tableData, $table);
+    echo $htmlCode;
+}
 
+
+if(!empty($_POST['sql_input'])) {
+    $statement = $_POST['sql_input'];   
+    
+    if(extractTableNameFromSQL($statement)) {
+        $tableData = executeUserSQL($statement);
+    }
+    else {
+        echo "Fehler beim verarbeiten des Nutzer-Statements.";
+    }           	        	
+
+    $htmlCode = buildHtml($tableData, $_SESSION['current_table']);                                                
+    echo $htmlCode;    
+}
+
+
+function extractTableNameFromSQL($statement) {
     /*
     Hier wird mithilfe von Regex (Regular Expressions) der Tabellenname aus dem SQL-Statement
 	herausgefiltert, um den zugehörigen Tabellenkopf zu generieren.
@@ -38,11 +56,15 @@ if(!empty($_POST['sql_input'])) {
 
     $pattern = '/buchladen\.(\w+)/';
     preg_match($pattern, $statement, $matches);
-    $tableName = isset($matches[1]) ? $matches[1] : null;	
-    $tableData = executeUserSQL($statement);
-    $htmlCode = buildHtml($tableData, $tableName);                                                
-    echo $htmlCode;    
+    $tableName = isset($matches[1]) ? $matches[1] : null;
+    
+    if(!$tableName) {
+        echo "Es konnte kein gültiger Tabellenname aus dem SQL-Statement extrahiert werden.";
+    }
+    
+    return $tableName;	
 }
+
 
 if (!empty($_POST['addEntry'])) {
     generateNewEntryForm();
