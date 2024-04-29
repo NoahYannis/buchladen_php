@@ -49,20 +49,14 @@ if (!empty($_POST['addEntry'])) {
 }
 
 if (!empty($_POST['deleteButton'])) {
-    $_SESSION['deleteButton'] = $_POST['deleteButton'];
-    echo $_SESSION['deleteButton'];
-    deleteEntry();
+    $tablePrimaryKey = getPrimaryKeyName($_SESSION['current_table']);
+    $entry = $_POST['deleteButton'];
+    deleteEntry($_SESSION['current_table'], $tablePrimaryKey, $entry);
 }
 
-function deleteEntry() {
+function deleteEntry($table, $tablePrimaryKey, $entry) {
     global $conn;
-
-    $tableColumnsResult = getTableColumns($_SESSION['current_table']);
-    $firstRow = $tableColumnsResult->fetch_assoc();
-    $primaryKey = $firstRow['COLUMN_NAME'];
-    
-    $statement = "DELETE FROM buchladen.{$_SESSION['current_table']} WHERE $primaryKey = {$_SESSION['deleteButton']}";
-
+    $statement = "DELETE FROM buchladen.$table WHERE $tablePrimaryKey = '$entry'";
     $result = $conn->query($statement);
 
     if ($result) {
@@ -71,6 +65,7 @@ function deleteEntry() {
         echo "Fehler beim Löschen des Eintrags: " . $conn->error;
     }
 }
+
 
 
 if(!empty($_POST['updateButton'])) {
@@ -138,6 +133,7 @@ function updateEntry() {
 
     // Füge die WHERE-Klausel hinzu, um die zu aktualisierende Zeile zu identifizieren
     $primaryKey = $columnNames[0];
+    $primaryKey = getPrimaryKeyName($_SESSION['current_table']);
     $statement .= " WHERE $primaryKey = '{$_SESSION['updateButton']}'"; // Stellen Sie sicher, dass das schließende Anführungszeichen hinzugefügt wurde
     echo "Statement:" . $statement;
     // Ausführen des SQL-Statements
@@ -281,3 +277,9 @@ function executeUserSQL($statement) {
 
 	return $tableData;	
 }
+
+
+function getPrimaryKeyName($table) {
+    return ($primaryKey = getTableColumns($table)->fetch_assoc()) ? $primaryKey['COLUMN_NAME'] : null;
+}
+
