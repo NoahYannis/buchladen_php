@@ -32,15 +32,9 @@ function displayTable($table) {
 
 if(!empty($_POST['sql_input'])) {
     $statement = $_POST['sql_input'];   
-    
-    if(extractTableNameFromSQL($statement)) {
-        $tableData = executeUserSQL($statement);
-    }
-    else {
-        echo "Fehler beim verarbeiten des Nutzer-Statements.";
-    }           	        	
-
-    $htmlCode = buildHtml($tableData, $_SESSION['current_table']);                                                
+    $tableData = executeUserSQL($statement);
+    $tableName = extractTableNameFromSQL($statement);
+    $htmlCode = buildHtml($tableData, $tableName);                                                
     echo $htmlCode;    
 }
 
@@ -55,14 +49,10 @@ function extractTableNameFromSQL($statement) {
     */
 
     $pattern = '/buchladen\.(\w+)/';
-    preg_match($pattern, $statement, $matches);
-    $tableName = isset($matches[1]) ? $matches[1] : null;
-    
-    if(!$tableName) {
-        echo "Es konnte kein gültiger Tabellenname aus dem SQL-Statement extrahiert werden.";
-    }
-    
-    return $tableName;	
+
+    // Wird ein potentieller Tabellen-Name gefunden, dann geben wir ihn hier zurück.
+    return preg_match($pattern, $statement, $matches) ? $matches[1] : null;
+
 }
 
 
@@ -289,16 +279,25 @@ function editEntry() {
 
 
 function executeUserSQL($statement) {
-	global $conn;
+    global $conn;
 
-	$result = $conn->query($statement);
+    try 
+    {
+        $result = $conn->query($statement);
+        $tableData = [];
+        while ($row = $result->fetch_assoc()) {
+            $tableData[] = $row;
+        }
 
-	while($row = $result->fetch_assoc()) {	
-		$tableData[] = $row;
-	}	
-
-	return $tableData;	
+        return $tableData;
+    }
+    catch (Exception $e)
+    {
+        echo "Beim Ausführen des Statements ist ein Fehler aufgetreten: {$e->getMessage()}";
+        return null;
+    }
 }
+
 
 
 function getPrimaryKeyName($table) {
