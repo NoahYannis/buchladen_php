@@ -22,7 +22,7 @@ if (!empty($_POST['displayTableButton'])) {
     $table = $_POST['displayTableButton'];
     $_SESSION['current_table'] = $table;
     displayTable($table);
-    generateAttributeFilter($table);
+    // generateAttributeFilter($table);
 }
 // ----------------------------------------
 
@@ -36,12 +36,22 @@ if(!empty($_POST['sql_input'])) {
     if(isset($tableData)) {
         $tableName = extractTableNameFromSQL($statement);
         $_SESSION['current_table'] = $tableName;
-        $htmlCode = buildHtml($tableData, $tableName);                                                
+        $htmlCode = buildHtml($tableData, $tableName);  
         echo $htmlCode;    
     }
 }
 // ----------------------------------------------
 
+
+// --------Tabelle nach Attributen filtern-------
+if (isset($_POST['select_sort'])) {
+    $selected_column = $_POST['selected_column'];
+    $tableName = $_SESSION['current_table'];
+    $tableData = getSelectedTableData($tableName);
+    $htmlCode = buildHtml($tableData, $tableName);
+    echo $htmlCode;  
+  } 
+// ----------------------------------------------
 
 
 
@@ -133,19 +143,17 @@ function generateForm($table, $postButtonName) {
     echo $formHtml;
 }
 
-function generateAttributeFilter($table) {
-    $columnNames = getColumnNames($table);
-
+function generateAttributeFilter($attributes) {
     $formHtml = "<form method='post'>";
     $formHtml .= "<label for='select_column'>Sortieren nach:</label>";
     $formHtml .= "<select name='selected_column' id='select_column'>";
     
-    foreach ($columnNames as $columnName) {
-        $formHtml .= "<option value='$columnName'>$columnName</option>";
+    foreach ($attributes as $attribute) {
+        $formHtml .= "<option value='$attribute'>$attribute</option>";
     }
     
     $formHtml .= "</select>";
-    $formHtml .= "<button type='submit'>Bestätigen</button>";
+    $formHtml .= "<button type='submit' name='select_sort'>Bestätigen</button>";
     $formHtml .= "</form>";
 
     echo $formHtml;
@@ -179,7 +187,6 @@ function updateEntry() {
     $tableName = $_SESSION['current_table'];
     $columnNames = getColumnNames($tableName);
 
-    // Erzeuge das UPDATE-Statement mit SET-Klausel
     $statement = "UPDATE buchladen.$tableName SET ";
 
     foreach ($columnNames as $columnName) {
@@ -250,6 +257,7 @@ function addNewEntry() {
 }
 
 
+// Liefert alle Einträge einer Tabelle
 function getSelectedTableData($selectedTable) {
 	global $conn;
 
@@ -264,8 +272,12 @@ function getSelectedTableData($selectedTable) {
 	return $tableData;	
 }
 
+function sortTableData_SelectionSort($table) {
+    return null;
+}
 
-// Get all column names of a table
+
+// Liefert alle Attribute einer Tabelle 
 function getTableColumns($table) {
 	global $conn;
 	$SQL = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table'";
@@ -278,6 +290,7 @@ function getTableColumns($table) {
 function buildHtml($data, $table){
     $columnNames = getColumnNames($table);
 
+    generateAttributeFilter($columnNames);                                              
     $htmlString = '<form method="post">';
     $htmlString .= '<table>'; 
     $htmlString .= '<tr>'; 
