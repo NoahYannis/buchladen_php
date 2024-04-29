@@ -31,10 +31,13 @@ if (!empty($_POST['displayTableButton'])) {
 if(!empty($_POST['sql_input'])) {
     $statement = $_POST['sql_input'];   
     $tableData = executeUserSQL($statement);
-    $tableName = extractTableNameFromSQL($statement);
-    $_SESSION['current_table'] = $tableName;
-    $htmlCode = buildHtml($tableData, $tableName);                                                
-    echo $htmlCode;    
+
+    if(isset($tableData)) {
+        $tableName = extractTableNameFromSQL($statement);
+        $_SESSION['current_table'] = $tableName;
+        $htmlCode = buildHtml($tableData, $tableName);                                                
+        echo $htmlCode;    
+    }
 }
 // ----------------------------------------------
 
