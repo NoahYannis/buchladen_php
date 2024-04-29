@@ -148,7 +148,8 @@ function generateAttributeFilter($attributes) {
     $formHtml .= "<select name='selected_column' id='select_column'>";
     
     foreach ($attributes as $attribute) {
-        $formHtml .= "<option value='$attribute'>$attribute</option>";
+        $selected = ($attribute == $_SESSION['filterAttribute']) ? "selected" : "";
+        $formHtml .= "<option value='$attribute' $selected>$attribute</option>";
     }
     
     $formHtml .= "</select>";
@@ -272,11 +273,13 @@ function getSelectedTableData($selectedTable) {
 }
 
 function sortData_SelectionSort($table, $filterAttribute) {
+    $_SESSION['filterAttribute'] = $filterAttribute;
     $unsortedData = getSelectedTableData($table);
 
     foreach($unsortedData as $row) {
         echo implode(" ", $row) . "<br/>";
     }
+    echo "<br/>";
     
     for($i = 0; $i < sizeof($unsortedData); $i++){
 		$min = $i;
