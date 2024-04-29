@@ -23,12 +23,6 @@ if (!empty($_POST['Button'])) {
     displayTable($table);
 }
 
-function displayTable($table) {
-    $tableData = getSelectedTableData($table);
-    $htmlCode = buildHtml($tableData, $table);
-    echo $htmlCode;
-}
-
 
 if(!empty($_POST['sql_input'])) {
     $statement = $_POST['sql_input'];   
@@ -38,16 +32,21 @@ if(!empty($_POST['sql_input'])) {
     echo $htmlCode;    
 }
 
+function displayTable($table) {
+    $tableData = getSelectedTableData($table);
+    $htmlCode = buildHtml($tableData, $table);
+    echo $htmlCode;
+}
 
 function extractTableNameFromSQL($statement) {
     /*
     Hier wird mithilfe von Regex (Regular Expressions) der Tabellenname aus dem SQL-Statement
-	herausgefiltert, um den zugehörigen Tabellenkopf zu generieren.
-    Das Muster beginnt mit "buchladen" (dem Datenbanknamen), gefolgt von einem beliebigen Zeichen (.) und
-    einem oder mehreren alphanumerischen Zeichen (dem gesuchten Tabellennamen).
+	herausgefiltert, um den zugehörigen Tabellenkopf zu generieren, falls das Nutzer-SQL-Statement
+    erfolgreich ausgeführt wurde. Das Muster beginnt mit "buchladen" (dem Datenbanknamen), gefolgt von 
+    einem beliebigen Zeichen (.) und einem oder mehreren alphanumerischen Zeichen (dem gesuchten Tabellennamen).
 	Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
     */
-
+    
     $pattern = '/buchladen\.(\w+)/';
 
     // Wird ein potentieller Tabellen-Name gefunden, dann geben wir ihn hier zurück.
