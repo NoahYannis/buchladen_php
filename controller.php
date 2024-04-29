@@ -17,13 +17,17 @@ if ($conn->connect_error) {
 }
 
 
-if (!empty($_POST['Button'])) {
-    $table = $_POST['Button'];
+// --------Tabelle anzeigen----------------
+if (!empty($_POST['displayTableButton'])) {
+    $table = $_POST['displayTableButton'];
     $_SESSION['current_table'] = $table;
     displayTable($table);
 }
+// ----------------------------------------
 
 
+
+// --------Nutzer-SQL-Statements verarbeiten-----
 if(!empty($_POST['sql_input'])) {
     $statement = $_POST['sql_input'];   
     $tableData = executeUserSQL($statement);
@@ -32,6 +36,43 @@ if(!empty($_POST['sql_input'])) {
     $htmlCode = buildHtml($tableData, $tableName);                                                
     echo $htmlCode;    
 }
+// ----------------------------------------------
+
+
+// -----------Einträge hinzufügen ---------
+if (!empty($_POST['addEntry'])) {
+    $table = $_SESSION['current_table'];
+    generateForm($table, 'confirmNewEntry');
+}
+
+if (isset($_POST['confirmNewEntry'])) {
+    addNewEntry();
+}
+// ----------------------------------------
+
+
+// -----------Einträge bearbeiten ---------
+if(!empty($_POST['updateButton'])) {
+    $_SESSION['updateButton'] = $_POST['updateButton'];
+    $table = $_SESSION['current_table'];
+    generateForm($table, 'confirmUpdateEntry');
+}
+
+if (isset($_POST['confirmUpdateEntry'])) {
+    updateEntry();
+}
+// ----------------------------------------
+
+
+// -----------Einträge löschen-------------
+if (!empty($_POST['deleteButton'])) {
+    $tablePrimaryKey = getPrimaryKeyName($_SESSION['current_table']);
+    $entry = $_POST['deleteButton'];
+    deleteEntry($_SESSION['current_table'], $tablePrimaryKey, $entry);
+}
+// ----------------------------------------
+
+
 
 function displayTable($table) {
     $tableData = getSelectedTableData($table);
@@ -39,13 +80,14 @@ function displayTable($table) {
     echo $htmlCode;
 }
 
+
 function extractTableNameFromSQL($statement) {
     /*
     Hier wird mithilfe von Regex (Regular Expressions) der Tabellenname aus dem SQL-Statement
-	herausgefiltert, um den zugehörigen Tabellenkopf zu generieren, falls das Nutzer-SQL-Statement
+    herausgefiltert, um den zugehörigen Tabellenkopf zu generieren, falls das Nutzer-SQL-Statement
     erfolgreich ausgeführt wurde. Das Muster beginnt mit "buchladen" (dem Datenbanknamen), gefolgt von 
     einem beliebigen Zeichen (.) und einem oder mehreren alphanumerischen Zeichen (dem gesuchten Tabellennamen).
-	Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
+    Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
     */
     
     $pattern = '/buchladen\.(\w+)/';
@@ -56,22 +98,11 @@ function extractTableNameFromSQL($statement) {
 }
 
 
-if (!empty($_POST['addEntry'])) {
-    $table = $_SESSION['current_table'];
-    generateForm($table, 'confirmNewEntry');
-}
-
-if (!empty($_POST['deleteButton'])) {
-    $tablePrimaryKey = getPrimaryKeyName($_SESSION['current_table']);
-    $entry = $_POST['deleteButton'];
-    deleteEntry($_SESSION['current_table'], $tablePrimaryKey, $entry);
-}
-
 function deleteEntry($table, $primaryKey, $entry) {
     global $conn;
     $statement = "DELETE FROM buchladen.$table WHERE $primaryKey = '$entry'";
     $result = $conn->query($statement);
-
+    
     if ($result) {
         echo "Der Eintrag wurde erfolgreich gelöscht!";
     } else {
@@ -79,12 +110,6 @@ function deleteEntry($table, $primaryKey, $entry) {
     }
 }
 
-
-if(!empty($_POST['updateButton'])) {
-    $_SESSION['updateButton'] = $_POST['updateButton'];
-    $table = $_SESSION['current_table'];
-    generateForm($table, 'confirmUpdateEntry');
-}
 
 function generateForm($table, $postButtonName) {
     $columnNames = getColumnNames($table);
@@ -101,13 +126,6 @@ function generateForm($table, $postButtonName) {
 }
 
 
-if (isset($_POST['confirmUpdateEntry'])) {
-    updateEntry();
-}
-
-if (isset($_POST['confirmNewEntry'])) {
-    addNewEntry();
-}
 
 function getColumnNames($tableName) {
     global $conn;
