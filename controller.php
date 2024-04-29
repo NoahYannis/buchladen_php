@@ -144,6 +144,7 @@ function generateForm($table, $postButtonName) {
 
 function generateAttributeFilter($attributes) {
     $formHtml = "<form method='post'>";
+    $formHtml = "<br/><br>";
     $formHtml .= "<label for='select_column'>Sortieren nach:</label>";
     $formHtml .= "<select name='selected_column' id='select_column'>";
     
@@ -155,6 +156,8 @@ function generateAttributeFilter($attributes) {
     $formHtml .= "</select>";
     $formHtml .= "<button type='submit' name='select_sort'>Bestätigen</button>";
     $formHtml .= "</form>";
+    $formHtml .= "<br/><br>";
+
 
     echo $formHtml;
 }
@@ -207,7 +210,7 @@ function updateEntry() {
 
     $primaryKey = getPrimaryKeyName($_SESSION['current_table']);
     $statement .= " WHERE $primaryKey = '{$_SESSION['updateButton']}'";
-    echo "Statement: " . $statement . "<br/><br/>";
+    echo "Statement: $statement";
 
     try 
     {
@@ -279,19 +282,18 @@ function sortData_SelectionSort($table, $filterAttribute) {
     foreach($unsortedData as $row) {
         echo implode(" ", $row) . "<br/>";
     }
-    echo "<br/>";
     
     for($i = 0; $i < sizeof($unsortedData); $i++){
 		$min = $i;
 		$check = false;
-		for($j = $i; $j < sizeof($unsortedData); $j++){														// loop to check all the data and find the lowest value indicator
-			if($unsortedData[$j][$filterAttribute] < $unsortedData[$min][$filterAttribute]){										// remember the lowest value indicator
+		for($j = $i; $j < sizeof($unsortedData); $j++){														
+			if($unsortedData[$j][$filterAttribute] < $unsortedData[$min][$filterAttribute]){	
 				$check = true;
 				$min = $j;
 			} 
 		}
 
-		if($check){																					// if NOT the first value of the unsorted row is the lowest value we have to switch.
+		if($check){																			
 		$dreieck = $unsortedData[$min];
 		$unsortedData[$min] = $unsortedData[$i];
 		$unsortedData[$i] = $dreieck;
