@@ -42,6 +42,10 @@ if(!empty($_POST['sql_input'])) {
 // ----------------------------------------------
 
 
+
+
+
+
 // -----------Einträge hinzufügen ---------
 if (!empty($_POST['addEntry'])) {
     $table = $_SESSION['current_table'];
@@ -252,17 +256,15 @@ function getTableColumns($table) {
 
 
 
-// Function to build the html code from the database data
 function buildHtml($data, $table){
+    $columnNames = getColumnNames($table);
 
-    $headers = getTableColumns($table);
-
-    $htmlString = '<form method="post">'; // Formular hinzugefügt
+    $htmlString = '<form method="post">';
     $htmlString .= '<table>'; 
     $htmlString .= '<tr>'; 
 
-    while($row = $headers->fetch_assoc()) {
-        $htmlString .= "<th>{$row["COLUMN_NAME"]}</th>"; 
+    foreach ($columnNames as $columnName) {
+        $htmlString .= "<th>{$columnName}</th>"; 
     }
     
     $htmlString .= '</tr>'; 
