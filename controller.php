@@ -22,6 +22,7 @@ if (!empty($_POST['displayTableButton'])) {
     $table = $_POST['displayTableButton'];
     $_SESSION['current_table'] = $table;
     displayTable($table);
+    generateAttributeFilter($table);
 }
 // ----------------------------------------
 
@@ -127,6 +128,24 @@ function generateForm($table, $postButtonName) {
         $formHtml .= "<input type=\"text\" id=\"$columnName\" name=\"$columnName\"><br>";
     }
     $formHtml .= "<button type='submit' name=\"$postButtonName\">Bestätigen</button>";
+    $formHtml .= "</form>";
+
+    echo $formHtml;
+}
+
+function generateAttributeFilter($table) {
+    $columnNames = getColumnNames($table);
+
+    $formHtml = "<form method='post'>";
+    $formHtml .= "<label for='select_column'>Sortieren nach:</label>";
+    $formHtml .= "<select name='selected_column' id='select_column'>";
+    
+    foreach ($columnNames as $columnName) {
+        $formHtml .= "<option value='$columnName'>$columnName</option>";
+    }
+    
+    $formHtml .= "</select>";
+    $formHtml .= "<button type='submit'>Bestätigen</button>";
     $formHtml .= "</form>";
 
     echo $formHtml;
@@ -285,7 +304,7 @@ function buildHtml($data, $table){
     }
     
     $htmlString .= '</table>'; 
-    $htmlString .= '</form>'; // Formular hinzugefügt
+    $htmlString .= '</form>';
 
     return $htmlString;
 }
