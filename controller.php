@@ -172,13 +172,19 @@ function updateEntry() {
     // Entferne das letzte Komma und Leerzeichen von der SET-Klausel
     $statement = rtrim($statement, ", ");
 
-    // Füge die WHERE-Klausel hinzu, um die zu aktualisierende Zeile zu identifizieren
-    $primaryKey = $columnNames[0];
     $primaryKey = getPrimaryKeyName($_SESSION['current_table']);
-    $statement .= " WHERE $primaryKey = '{$_SESSION['updateButton']}'"; // Stellen Sie sicher, dass das schließende Anführungszeichen hinzugefügt wurde
+    $statement .= " WHERE $primaryKey = '{$_SESSION['updateButton']}'";
     echo "Statement: " . $statement;
-    // Ausführen des SQL-Statements
-    $conn->query($statement);
+
+    try 
+    {
+        $conn->query($statement);
+    }
+    catch (Exception $e)
+    {
+        echo "Beim Bearbeiten des Eintrags ist ein Fehler aufgetreten: {$e->getMessage()}";
+        return null;
+    }
 }
  
 
@@ -204,10 +210,17 @@ function addNewEntry() {
     // Füge die Spaltennamen und Werte zum endgültigen SQL-Statement hinzu
     $finalStatement = $statement . $values;
     
-    // Ausführen des SQL-Statements (falls benötigt)
-    $conn->query($finalStatement);
+    try 
+    {
+        $conn->query($statement);
+    }
+    catch (Exception $e)
+    {
+        echo "Beim Hinzufügen des Eintrags ist ein Fehler aufgetreten: {$e->getMessage()}";
+        return null;
+    }
     
-    echo $finalStatement; // Zum Testen, Ausgabe des SQL-Statements
+    echo $finalStatement; 
 }
 
 
