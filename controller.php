@@ -22,7 +22,6 @@ if (!empty($_POST['displayTableButton'])) {
     $table = $_POST['displayTableButton'];
     $_SESSION['current_table'] = $table;
     displayTable($table);
-    // generateAttributeFilter($table);
 }
 // ----------------------------------------
 
@@ -45,15 +44,13 @@ if(!empty($_POST['sql_input'])) {
 
 // --------Tabelle nach Attributen filtern-------
 if (isset($_POST['select_sort'])) {
-    $selected_column = $_POST['selected_column'];
+    $filterAttribute = $_POST['selected_column'];
     $tableName = $_SESSION['current_table'];
-    $tableData = getSelectedTableData($tableName);
-    $htmlCode = buildHtml($tableData, $tableName);
+    $sortedData = sortData_SelectionSort($tableName, $filterAttribute);
+    $htmlCode = buildHtml($sortedData, $tableName);
     echo $htmlCode;  
   } 
 // ----------------------------------------------
-
-
 
 
 
@@ -65,6 +62,7 @@ if (!empty($_POST['addEntry'])) {
 
 if (isset($_POST['confirmNewEntry'])) {
     addNewEntry();
+    displayTable($_SESSION['current_table']);
 }
 // ----------------------------------------
 
@@ -78,6 +76,7 @@ if(!empty($_POST['updateButton'])) {
 
 if (isset($_POST['confirmUpdateEntry'])) {
     updateEntry();
+    displayTable($_SESSION['current_table']);
 }
 // ----------------------------------------
 
@@ -207,7 +206,7 @@ function updateEntry() {
 
     $primaryKey = getPrimaryKeyName($_SESSION['current_table']);
     $statement .= " WHERE $primaryKey = '{$_SESSION['updateButton']}'";
-    echo "Statement: " . $statement;
+    echo "Statement: " . $statement . "<br/><br/>";
 
     try 
     {
@@ -272,8 +271,30 @@ function getSelectedTableData($selectedTable) {
 	return $tableData;	
 }
 
-function sortTableData_SelectionSort($table) {
-    return null;
+function sortData_SelectionSort($table, $filterAttribute) {
+    $unsortedData = getSelectedTableData($table);
+
+    foreach($unsortedData as $row) {
+        echo implode(" ", $row) . "<br/>";
+    }
+    
+    for($i = 0; $i < sizeof($unsortedData); $i++){
+		$min = $i;
+		$check = false;
+		for($j = $i; $j < sizeof($unsortedData); $j++){														// loop to check all the data and find the lowest value indicator
+			if($unsortedData[$j][$filterAttribute] < $unsortedData[$min][$filterAttribute]){										// remember the lowest value indicator
+				$check = true;
+				$min = $j;
+			} 
+		}
+
+		if($check){																					// if NOT the first value of the unsorted row is the lowest value we have to switch.
+		$dreieck = $unsortedData[$min];
+		$unsortedData[$min] = $unsortedData[$i];
+		$unsortedData[$i] = $dreieck;
+		}
+	}
+	return $unsortedData;	
 }
 
 
