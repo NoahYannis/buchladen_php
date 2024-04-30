@@ -118,7 +118,17 @@ function extractTableNameFromSQL($statement) {
 function deleteEntry($table, $primaryKey, $entry) {
     global $conn;
     $statement = "DELETE FROM buchladen.$table WHERE $primaryKey = '$entry'";
-    $result = $conn->query($statement);
+    logStatementToConsole($statement);
+
+    try 
+    {
+        $result = $conn->query($statement);
+    }
+    catch (Exception $e) 
+    {
+        echo "Der Eintrag konnte nicht gelöscht werden: " . $e->getMessage();
+    }
+    
     
     if ($result) {
         echo "Der Eintrag wurde erfolgreich gelöscht!";
@@ -157,8 +167,7 @@ function generateAttributeFilter($attributes) {
     $formHtml .= "<button type='submit' name='select_sort'>Bestätigen</button>";
     $formHtml .= "</form>";
     $formHtml .= "<br/><br>";
-
-
+  
     echo $formHtml;
 }
 
@@ -210,7 +219,7 @@ function updateEntry() {
 
     $primaryKey = getPrimaryKeyName($_SESSION['current_table']);
     $statement .= " WHERE $primaryKey = '{$_SESSION['updateButton']}'";
-    echo "Statement: $statement";
+    logStatementToConsole($statement);
 
     try 
     {
@@ -245,18 +254,25 @@ function addNewEntry() {
     $values = rtrim($values, ", ") . ")";
     // Füge die Spaltennamen und Werte zum endgültigen SQL-Statement hinzu
     $finalStatement = $statement . $values;
-    
+    logStatementToConsole($finalStatement);
+
     try 
     {
-        $conn->query($statement);
+        $conn->query($finalStatement);
     }
     catch (Exception $e)
     {
         echo "Beim Hinzufügen des Eintrags ist ein Fehler aufgetreten: {$e->getMessage()}";
         return null;
     }
-    
-    echo $finalStatement; 
+}
+
+
+// Ausgeführte SQL-Statements in der Konsole logen.
+function logStatementToConsole($statement) {
+    echo '<script>';
+    echo 'console.log("' . $statement . '");';
+    echo '</script>';
 }
 
 
@@ -351,7 +367,7 @@ function buildHtml($data, $table){
 
 function executeUserSQL($statement) {
     global $conn;
-
+ 
     try 
     {
         $result = $conn->query($statement);
