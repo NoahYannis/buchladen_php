@@ -16,12 +16,13 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
+$currentTable = isset($_SESSION['current_table']) ? $_SESSION['current_table'] : null;
+
 
 // --------Tabelle anzeigen----------------
 if (!empty($_POST['displayTableButton'])) {
-    $table = $_POST['displayTableButton'];
-    $_SESSION['current_table'] = $table;
-    displayTable($table);
+    $currentTable = $_SESSION['current_table'] = $_POST['displayTableButton'];
+    displayTable($currentTable);
 }
 // ----------------------------------------
 
@@ -35,7 +36,7 @@ if(!empty($_POST['sql_input'])) {
     if(isset($tableData)) {
         
         $tableName = findRegexPatternMatch($statement,'/buchladen\.(\w+)/');
-        $_SESSION['current_table'] = $tableName;
+        $currentTable = $_SESSION['current_table'] = $tableName;
         $htmlCode = buildHtml($tableData, $tableName);  
         echo $htmlCode;    
     }
@@ -51,24 +52,21 @@ if(!empty($_POST['sql_input'])) {
 // --------Tabelle nach Attributen filtern-------
 if (isset($_POST['select_sort'])) {
     $filterAttribute = $_POST['selected_column'];
-    $tableName = $_SESSION['current_table'];
-    $sortedData = sortData_SelectionSort($tableName, $filterAttribute);
-    $htmlCode = buildHtml($sortedData, $tableName);
+    $sortedData = sortData_SelectionSort($currentTable, $filterAttribute);
+    $htmlCode = buildHtml($sortedData, $currentTable);
     echo $htmlCode;  
   } 
 // ----------------------------------------------
 
 
-
 // -----------Einträge hinzufügen ---------
 if (!empty($_POST['addEntry'])) {
-    $table = $_SESSION['current_table'];
-    generateForm($table, 'confirmNewEntry');
+    generateForm($currentTable, 'confirmNewEntry');
 }
 
 if (isset($_POST['confirmNewEntry'])) {
     addNewEntry();
-    displayTable($_SESSION['current_table']);
+    displayTable($currentTable);
 }
 // ----------------------------------------
 
@@ -76,22 +74,22 @@ if (isset($_POST['confirmNewEntry'])) {
 // -----------Einträge bearbeiten ---------
 if(!empty($_POST['updateButton'])) {
     $_SESSION['updateButton'] = $_POST['updateButton'];
-    $table = $_SESSION['current_table'];
-    generateForm($table, 'confirmUpdateEntry');
+    generateForm($currentTable, 'confirmUpdateEntry');
 }
 
 if (isset($_POST['confirmUpdateEntry'])) {
     updateEntry();
-    displayTable($_SESSION['current_table']);
+    displayTable($currentTable);
 }
 // ----------------------------------------
 
 
 // -----------Einträge löschen-------------
 if (!empty($_POST['deleteButton'])) {
-    $tablePrimaryKey = getPrimaryKeyName($_SESSION['current_table']);
+    $tablePrimaryKey = getPrimaryKeyName($currentTable);
     $entry = $_POST['deleteButton'];
-    deleteEntry($_SESSION['current_table'], $tablePrimaryKey, $entry);
+    deleteEntry($currentTable, $tablePrimaryKey, $entry);
+    displayTable($currentTable);
 }
 // ----------------------------------------
 
@@ -203,10 +201,10 @@ function getColumnNames($tableName) {
 
 function updateEntry() {
     global $conn;
-    $tableName = $_SESSION['current_table'];
-    $columnNames = getColumnNames($tableName);
+    global $currentTable;
 
-    $statement = "UPDATE buchladen.$tableName SET ";
+    $columnNames = getColumnNames($currentTable);
+    $statement = "UPDATE buchladen.$currentTable SET ";
 
     foreach ($columnNames as $columnName) {
         // Überprüfe, ob der Spaltenname kein reservierter Name wie 'updateButton' ist
@@ -224,7 +222,7 @@ function updateEntry() {
     // Entferne das letzte Komma und Leerzeichen von der SET-Klausel
     $statement = rtrim($statement, ", ");
 
-    $primaryKey = getPrimaryKeyName($_SESSION['current_table']);
+    $primaryKey = getPrimaryKeyName($currentTable);
     $statement .= " WHERE $primaryKey = '{$_SESSION['updateButton']}'";
     logStatementToConsole($statement);
 
@@ -242,10 +240,10 @@ function updateEntry() {
 
 function addNewEntry() {
     global $conn;
-    $tableName = $_SESSION['current_table'];
-    $columnNames = getColumnNames($tableName);
+    global $currentTable;
 
-    $statement = "INSERT INTO buchladen.$tableName (";
+    $columnNames = getColumnNames($currentTable);
+    $statement = "INSERT INTO buchladen.$currentTable (";
     $values = "VALUES (";
     foreach ($columnNames as $columnName) {
         // Überprüfe, ob der Wert für dieses Feld im POST-Array vorhanden ist
