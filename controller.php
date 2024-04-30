@@ -37,14 +37,27 @@ if(!empty($_POST['sql_input'])) {
         
         $tableName = findRegexPatternMatch($statement,'/buchladen\.(\w+)/');
         $currentTable = $_SESSION['current_table'] = $tableName;
+
+        $containsExplicitColumns = !preg_match('/\s+\*\s+/', $statement);
+
+        if ($containsExplicitColumns) {
+            $explicitColumns = findRegexPatternMatch($statement, '#(?<=\bselect\s)[a-z_,\s]+(?=\s+from)#');
+            $htmlCode = buildHtml($tableData, $tableName, $explicitColumns);  
+            echo $htmlCode;
+            return;
+        }
+        
         $htmlCode = buildHtml($tableData, $tableName);  
-        echo $htmlCode;    
+        echo $htmlCode;  
+        
     }
 
    // Erklärung des Such-Musters: Hier wird der korrekte Tabellenname gesucht.
    // Vor dem Tabellennamen steht "buchladen", gefolgt von einem beliebigen Zeichen (.)
    // Anschließend kommt der gesuchte Tabellenname, der aus einem oder mehreren alphanumerischen Zeichen besteht,
    // bis zum ersten Leerzeichen.
+
+   // TODO: Erklärung weitere Pattern.
 
 // ----------------------------------------------
 }
@@ -108,10 +121,12 @@ function findRegexPatternMatch($statement, $pattern) {
     zu generieren.Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
     */
     
-    // Wird das gesuchte Muster im Statement gefunden, dann geben wir das erste Vorkommen zurück.
-    return preg_match($pattern, $statement, $matches) ? $matches[1] : null;
-
+    if (preg_match($pattern, $statement, $matches)) {
+        // Wenn ein Ergebnis gefunden wurde, gib das erste Vorkommen zurück
+        return $matches[1] ?? null;
+    }
 }
+
 
 
 function deleteEntry($table, $primaryKey, $entry) {
@@ -168,7 +183,6 @@ function generateAttributeFilter($attributes) {
     $formHtml .= "</select>";
     $formHtml .= "<button type='submit' name='select_sort'>Bestätigen</button>";
     $formHtml .= "</form>";
-    $formHtml .= "<br/><br>";
   
     echo $formHtml;
 }
@@ -352,10 +366,11 @@ function getTableColumns($table) {
 
 
 
-function buildHtml($data, $table){
-    $columnNames = getColumnNames($table);
+function buildHtml($data, $table, $explicitColumns = null){
 
-    generateAttributeFilter($columnNames);                                              
+    $columnNames = isset($explicitColumns) ? $explicitColumns : getColumnNames($table);
+    generateAttributeFilter($columnNames);      
+
     $htmlString = '<form method="post">';
     $htmlString .= '<table>'; 
     $htmlString .= '<tr>'; 
@@ -374,7 +389,6 @@ function buildHtml($data, $table){
                 $htmlString .= '<td>' . $value . '</td>';
             }
 
-            // Den Namen des "Bearbeiten"-Buttons auf den Wert des Primärschlüssels setzen
             $htmlString .= "<td><button type=\"submit\" name=\"updateButton\" value=\"$primaryKey\" class=\"Button\">Bearbeiten</button></td>";
             $htmlString .= "<td><button type=\"submit\" name=\"deleteButton\" value=\"$primaryKey\" class=\"Button\">Löschen</button></td>";
             $htmlString .= '</tr>';
