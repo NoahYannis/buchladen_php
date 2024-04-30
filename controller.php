@@ -46,7 +46,7 @@ if(!empty($_POST['sql_input'])) {
    // bis zum ersten Leerzeichen.
 
 // ----------------------------------------------
-
+}
 
 // --------Tabelle nach Attributen filtern-------
 if (isset($_POST['select_sort'])) {
@@ -154,8 +154,11 @@ function generateForm($table, $postButtonName) {
 }
 
 function generateAttributeFilter($attributes) {
+    if(!isset($_SESSION['filterAttribute']))
+        $_SESSION['filterAttribute'] = "";
+
     $formHtml = "<form method='post'>";
-    $formHtml = "<br/><br>";
+    $formHtml .= "<br/><br>";
     $formHtml .= "<label for='select_column'>Sortieren nach:</label>";
     $formHtml .= "<select name='selected_column' id='select_column'>";
     
@@ -309,7 +312,7 @@ function sortData_SelectionSort($table, $filterAttribute) {
     $unsortedData = getSelectedTableData($table);
 
     foreach($unsortedData as $row) {
-        echo implode(" ", $row) . "<br/>";
+        logStatementToConsole(implode(" ", $row));
     }
     
     for($i = 0; $i < sizeof($unsortedData); $i++){
