@@ -187,9 +187,12 @@ function getColumnNames($tableName) {
            $columnNames[] = $row['COLUMN_NAME'];
          }
             
-    } catch (Exception $e) {
+    } 
+    catch (Exception $e) 
+    {
         echo "Fehler beim Abrufen der Spaltennamen: {$e->getMessage()}";
     }
+    
     return $columnNames;
 }
 
@@ -281,8 +284,17 @@ function getSelectedTableData($selectedTable) {
 	global $conn;
 
 	$SQL = "SELECT * FROM buchladen.{$selectedTable};";
+    logStatementToConsole($SQL);
 
-	$result = $conn->query($SQL);																	
+    try
+    {
+        $result = $conn->query($SQL);																	
+    }
+    catch (Exception $e)
+    {
+        echo "Die ausgewählte Tabelle konnte nicht geladen werden: {$e->getMessage()}";
+        return null;
+    }
 	
 	while($row = $result->fetch_assoc()) {	
 		$tableData[] = $row;
@@ -323,7 +335,16 @@ function sortData_SelectionSort($table, $filterAttribute) {
 function getTableColumns($table) {
 	global $conn;
 	$SQL = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table'";
-	$result = $conn->query($SQL);	
+
+    try 
+    {
+        $result = $conn->query($SQL);
+    }
+    catch (Exception $e)
+    {
+        echo "Beim Laden der Attribute von $table ist ein Fehler aufgetreten: {$e->getMessage()}";
+    }
+
 	return $result;						
 }
 
