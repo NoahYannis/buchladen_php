@@ -33,7 +33,7 @@ if(!empty($_POST['sql_input'])) {
     $tableData = executeUserSQL($statement);
 
     if(isset($tableData)) {
-        $tableName = extractTableNameFromSQL($statement);
+        $tableName = findRegexPatternMatch($statement,'/buchladen\.(\w+)/'); // TODO: Kommentieren
         $_SESSION['current_table'] = $tableName;
         $htmlCode = buildHtml($tableData, $tableName);  
         echo $htmlCode;    
@@ -97,8 +97,8 @@ function displayTable($table) {
     echo $htmlCode;
 }
 
-
-function extractTableNameFromSQL($statement) {
+// Refactor
+function findRegexPatternMatch($statement, $pattern) {
     /*
     Hier wird mithilfe von Regex (Regular Expressions) der Tabellenname aus dem SQL-Statement
     herausgefiltert, um den zugehörigen Tabellenkopf zu generieren, falls das Nutzer-SQL-Statement
@@ -107,9 +107,7 @@ function extractTableNameFromSQL($statement) {
     Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
     */
     
-    $pattern = '/buchladen\.(\w+)/';
-
-    // Wird ein potentieller Tabellen-Name gefunden, dann geben wir ihn hier zurück.
+    // Wird das gesuchte Muster im Statement gefunden, dann geben wir das erste Vorkommen zurück.
     return preg_match($pattern, $statement, $matches) ? $matches[1] : null;
 
 }
@@ -388,7 +386,8 @@ function buildHtml($data, $table){
 
 function executeUserSQL($statement) {
     global $conn;
- 
+    logStatementToConsole($statement);
+
     try 
     {
         $result = $conn->query($statement);
