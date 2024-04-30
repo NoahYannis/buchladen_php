@@ -33,12 +33,18 @@ if(!empty($_POST['sql_input'])) {
     $tableData = executeUserSQL($statement);
 
     if(isset($tableData)) {
-        $tableName = findRegexPatternMatch($statement,'/buchladen\.(\w+)/'); // TODO: Kommentieren
+        
+        $tableName = findRegexPatternMatch($statement,'/buchladen\.(\w+)/');
         $_SESSION['current_table'] = $tableName;
         $htmlCode = buildHtml($tableData, $tableName);  
         echo $htmlCode;    
     }
-}
+
+   // Erklärung des Such-Musters: Hier wird der korrekte Tabellenname gesucht.
+   // Vor dem Tabellennamen steht "buchladen", gefolgt von einem beliebigen Zeichen (.)
+   // Anschließend kommt der gesuchte Tabellenname, der aus einem oder mehreren alphanumerischen Zeichen besteht,
+   // bis zum ersten Leerzeichen.
+
 // ----------------------------------------------
 
 
@@ -97,14 +103,11 @@ function displayTable($table) {
     echo $htmlCode;
 }
 
-// Refactor
 function findRegexPatternMatch($statement, $pattern) {
     /*
-    Hier wird mithilfe von Regex (Regular Expressions) der Tabellenname aus dem SQL-Statement
-    herausgefiltert, um den zugehörigen Tabellenkopf zu generieren, falls das Nutzer-SQL-Statement
-    erfolgreich ausgeführt wurde. Das Muster beginnt mit "buchladen" (dem Datenbanknamen), gefolgt von 
-    einem beliebigen Zeichen (.) und einem oder mehreren alphanumerischen Zeichen (dem gesuchten Tabellennamen).
-    Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
+    Hier wird mithilfe von Regex (Regular Expressions) ein bestimmtes Muster aus einem SQL-Statement
+    herausgefiltert, um  im Anschluss den Tabellenkopf für die korrekte Tabelle mit den korrekten Attributen
+    zu generieren.Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
     */
     
     // Wird das gesuchte Muster im Statement gefunden, dann geben wir das erste Vorkommen zurück.
