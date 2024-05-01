@@ -22,6 +22,8 @@ $currentTable = isset($_SESSION['current_table']) ? $_SESSION['current_table'] :
 // --------Tabelle anzeigen----------------
 if (!empty($_POST['displayTableButton'])) {
     $currentTable = $_SESSION['current_table'] = $_POST['displayTableButton'];
+    $_SESSION['user_statement_data'] = null;
+    $_SESSION['explicit_columns'] = null;
     displayTable($currentTable);
 }
 // ----------------------------------------
@@ -34,7 +36,7 @@ if(!empty($_POST['sql_input'])) {
     $tableData = executeUserSQL($statement);
 
     if(isset($tableData)) {
-        
+        $_SESSION['user_statement_data'] = $tableData;
         $tableName = findRegexPatternMatch($statement,'/buchladen\.(\w+)/', 1);
         $currentTable = $_SESSION['current_table'] = $tableName;
 
@@ -43,11 +45,17 @@ if(!empty($_POST['sql_input'])) {
         if ($containsExplicitColumns) {
             $explicitColumns = findRegexPatternMatch($statement, '/(?<=\bselect\s)[a-z_,\s]+(?=\s+from)/', 0);
             logStatementToConsole($explicitColumns);
-            $htmlCode = buildHtml($tableData, $tableName, splitColumns($explicitColumns));  
+            $_SESSION['explicit_columns'] = splitColumns($explicitColumns);
+
+            $htmlCode = buildHtml($tableData, $tableName, $_SESSION['explicit_columns']);  
             echo $htmlCode;
             return;
         }
-        
+        else
+        {
+            $_SESSION['explicit_columns'] = null;
+        }
+
         $htmlCode = buildHtml($tableData, $tableName);  
         echo $htmlCode;  
         
@@ -66,8 +74,9 @@ if(!empty($_POST['sql_input'])) {
 // --------Tabelle nach Attributen filtern-------
 if (isset($_POST['select_sort'])) {
     $filterAttribute = $_POST['selected_column'];
-    $sortedData = sortData_SelectionSort($currentTable, $filterAttribute);
-    $htmlCode = buildHtml($sortedData, $currentTable);
+    $unsortedData = $_SESSION['user_statement_data'] ?? $currentTable;
+    $sortedData = sortData_SelectionSort($unsortedData, $filterAttribute);
+    $htmlCode = buildHtml($sortedData, $currentTable, $_SESSION['explicit_columns']);
     echo $htmlCode;  
   } 
 // ----------------------------------------------
@@ -329,7 +338,7 @@ function getSelectedTableData($selectedTable) {
 
 function sortData_SelectionSort($table, $filterAttribute) {
     $_SESSION['filterAttribute'] = $filterAttribute;
-    $unsortedData = getSelectedTableData($table);
+    $unsortedData = $_SESSION['user_statement_data'] ?? getSelectedTableData($table);
 
     foreach($unsortedData as $row) {
         logStatementToConsole(implode(" ", $row));
