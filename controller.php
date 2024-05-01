@@ -24,6 +24,7 @@ if (!empty($_POST['displayTableButton'])) {
     $currentTable = $_SESSION['current_table'] = $_POST['displayTableButton'];
     $_SESSION['user_statement_data'] = null;
     $_SESSION['explicit_columns'] = null;
+    $_SESSION['last_edited_entry'] = null;
     displayTable($currentTable);
 }
 // ----------------------------------------
@@ -101,7 +102,7 @@ if(!empty($_POST['updateButton'])) {
 }
 
 if (isset($_POST['confirmUpdateEntry'])) {
-    updateEntry();
+    updateEntry($_SESSION['updateButton']);
     displayTable($currentTable);
 }
 // ----------------------------------------
@@ -171,16 +172,19 @@ function deleteEntry($table, $primaryKey, $entry) {
 
 function generateForm($table, $postButtonName) {
     $columnNames = getColumnNames($table);
-
+    $entryData = !empty($_POST['updateButton']) ? getEntryData($table, $_POST['updateButton']) : null;
+    
     $formHtml = "<form method='post'>";
     foreach ($columnNames as $columnName) 
     {
         if($columnName == getPrimaryKeyName($table))
-             continue; // Primärschlüssel darf nicht bearbeitet werden
-
+        continue; // Primärschlüssel darf nicht manuell gesetzt oder bearbeitet werden.
+    
+        $columnValue = isset($entryData[0][$columnName]) ? $entryData[0][$columnName] : ''; // Wert der aktuellen Spalte aus den abgerufenen Daten
         $formHtml .= "<label for=\"$columnName\">$columnName:</label>";
-        $formHtml .= "<input type=\"text\" id=\"$columnName\" name=\"$columnName\"><br>";
+        $formHtml .= "<input type=\"text\" id=\"$columnName\" value=\"$columnValue\" name=\"$columnName\"><br>";
     }
+    
     $formHtml .= "<button type='submit' name=\"$postButtonName\">Bestätigen</button>";
     $formHtml .= "</form>";
 
@@ -209,6 +213,31 @@ function generateFilterForm($attributes) {
 }
 
 
+function getEntryData($table, $entryPrimaryKey) {
+    global $conn;
+
+    $SQL = "SELECT * FROM buchladen.$table WHERE " . getPrimaryKeyName($table) . " = '$entryPrimaryKey'";
+
+    try 
+    {
+        $result = $conn->query($SQL);	
+
+        while($row = $result->fetch_assoc()) {	
+            $tableData[] = $row;
+        }
+      
+        return $tableData;
+            
+    } 
+    catch (Exception $e) 
+    {
+        echo "Fehler beim Abrufen des Eintrags: {$e->getMessage()}";
+    }
+    
+    return $tableData;
+}
+
+
 
 function getColumnNames($tableName) {
     global $conn;
@@ -234,7 +263,7 @@ function getColumnNames($tableName) {
 }
 
 
-function updateEntry() {
+function updateEntry($entryPrimaryKey) {
     global $conn;
     global $currentTable;
 
@@ -258,12 +287,13 @@ function updateEntry() {
     $statement = rtrim($statement, ", ");
 
     $primaryKey = getPrimaryKeyName($currentTable);
-    $statement .= " WHERE $primaryKey = '{$_SESSION['updateButton']}'";
+    $statement .= " WHERE $primaryKey = '$entryPrimaryKey'";
     logStatementToConsole($statement);
-
+ 
     try 
     {
         $conn->query($statement);
+        $_SESSION['last_edited_entry'] = $entryPrimaryKey;
     }
     catch (Exception $e)
     {
