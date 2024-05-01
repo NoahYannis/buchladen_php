@@ -174,7 +174,7 @@ function generateForm($table, $postButtonName) {
     echo $formHtml;
 }
 
-function generateAttributeFilter($attributes) {
+function generateFilterForm($attributes) {
     if(!isset($_SESSION['filterAttribute']))
         $_SESSION['filterAttribute'] = "";
 
@@ -377,7 +377,7 @@ function getTableColumns($table) {
 function buildHtml($data, $table, $explicitColumns = null){
 
     $columnNames = isset($explicitColumns) ? $explicitColumns : getColumnNames($table);
-    generateAttributeFilter($columnNames);      
+    generateFilterForm($columnNames);      
 
     $htmlString = '<form method="post">';
     $htmlString .= '<table>'; 
