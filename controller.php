@@ -35,14 +35,15 @@ if(!empty($_POST['sql_input'])) {
 
     if(isset($tableData)) {
         
-        $tableName = findRegexPatternMatch($statement,'/buchladen\.(\w+)/');
+        $tableName = findRegexPatternMatch($statement,'/buchladen\.(\w+)/', 1);
         $currentTable = $_SESSION['current_table'] = $tableName;
 
         $containsExplicitColumns = !preg_match('/\s+\*\s+/', $statement);
 
         if ($containsExplicitColumns) {
-            $explicitColumns = findRegexPatternMatch($statement, '#(?<=\bselect\s)[a-z_,\s]+(?=\s+from)#');
-            $htmlCode = buildHtml($tableData, $tableName, $explicitColumns);  
+            $explicitColumns = findRegexPatternMatch($statement, '/(?<=\bselect\s)[a-z_,\s]+(?=\s+from)/', 0);
+            logStatementToConsole($explicitColumns);
+            $htmlCode = buildHtml($tableData, $tableName, splitColumns($explicitColumns));  
             echo $htmlCode;
             return;
         }
@@ -114,7 +115,7 @@ function displayTable($table) {
     echo $htmlCode;
 }
 
-function findRegexPatternMatch($statement, $pattern) {
+function findRegexPatternMatch($statement, $pattern, $captureGroup) {
     /*
     Hier wird mithilfe von Regex (Regular Expressions) ein bestimmtes Muster aus einem SQL-Statement
     herausgefiltert, um  im Anschluss den Tabellenkopf für die korrekte Tabelle mit den korrekten Attributen
@@ -123,11 +124,18 @@ function findRegexPatternMatch($statement, $pattern) {
     
     if (preg_match($pattern, $statement, $matches)) {
         // Wenn ein Ergebnis gefunden wurde, gib das erste Vorkommen zurück
-        return $matches[1] ?? null;
+        return $matches[$captureGroup] ?? null;
     }
 }
 
 
+function splitColumns($columnsString) {
+    // Entferne Leerzeichen am Anfang und Ende des Strings und trenne die Spalten
+    $columnsArray = explode(',', trim($columnsString));
+    // Entferne Leerzeichen aus den Spaltennamen
+    $columnsArray = array_map('trim', $columnsArray);
+    return $columnsArray;
+}
 
 function deleteEntry($table, $primaryKey, $entry) {
     global $conn;
