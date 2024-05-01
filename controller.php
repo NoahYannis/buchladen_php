@@ -173,7 +173,11 @@ function generateForm($table, $postButtonName) {
     $columnNames = getColumnNames($table);
 
     $formHtml = "<form method='post'>";
-    foreach ($columnNames as $columnName) {
+    foreach ($columnNames as $columnName) 
+    {
+        if($columnName == getPrimaryKeyName($table))
+             continue; // Primärschlüssel darf nicht bearbeitet werden
+
         $formHtml .= "<label for=\"$columnName\">$columnName:</label>";
         $formHtml .= "<input type=\"text\" id=\"$columnName\" name=\"$columnName\"><br>";
     }
