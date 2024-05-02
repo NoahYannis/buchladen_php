@@ -26,8 +26,7 @@
 
     <form action="" method="post">
         <input name="sql_input" type="text" placeholder="SQL-Statement eingeben..." />
-        <button type="submit" class="button btn-confirm" name="executeUserSql"><i class="fa fa-check-circle-o" aria-hidden="true"></i>&nbsp; Ausführen</button>
-        <button type="submit" name="addEntry" class="button btn-add" value="addEntry"><i class="fa fa-plus" aria-hidden="true"></i></button>
+        <button type="submit" class="button btn-confirm" name="executeUserSql" style="width: 37.78px; height: 37.78px;"><i class="fa fa-search"></i></button>
     </form>
     <?php include 'controller.php'; ?>
 </body>
