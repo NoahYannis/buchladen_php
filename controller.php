@@ -158,7 +158,7 @@ function deleteEntry($table, $primaryKey, $entry) {
     }
     catch (Exception $e) 
     {
-        echo "Der Eintrag konnte nicht gelöscht werden: " . $e->getMessage();
+        echo "<div class='error-message'>Fehler beim Löschen des Eintrags: {$e->getMessage()}</div>";
     }
     
     
@@ -197,7 +197,7 @@ function generateFilterForm($attributes) {
 
     $formHtml = "<form method='post'>";
     $formHtml .= "<br/><br>";
-    $formHtml .= "<label for='select_column'>Sortieren nach:</label>";
+    $formHtml .= "<label for='select_column'>Filtern nach:</label>";
     $formHtml .= "<select name='selected_column' id='select_column'>";
     
     foreach ($attributes as $attribute) {
@@ -206,7 +206,7 @@ function generateFilterForm($attributes) {
     }
     
     $formHtml .= "</select>";
-    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm'><i class=\"fa fa-check-circle-o\"></i> Bestätigen</button>";
+    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm'><i class=\"fa fa-check-circle-o\"></i> Anwenden</button>";
     $formHtml .= "</form>";
   
     echo $formHtml;
@@ -231,7 +231,7 @@ function getEntryData($table, $entryPrimaryKey) {
     } 
     catch (Exception $e) 
     {
-        echo "Fehler beim Abrufen des Eintrags: {$e->getMessage()}";
+        echo "<div class='error-message'>Fehler beim Abrufen des Eintrags: {$e->getMessage()}</div>";
     }
     
     return $tableData;
@@ -256,7 +256,7 @@ function getColumnNames($tableName) {
     } 
     catch (Exception $e) 
     {
-        echo "Fehler beim Abrufen der Spaltennamen: {$e->getMessage()}";
+        echo "<div class='error-message'>Fehler beim Abrufen des Spaltennamens: {$e->getMessage()}</div>";
     }
     
     return $columnNames;
@@ -297,7 +297,7 @@ function updateEntry($entryPrimaryKey) {
     }
     catch (Exception $e)
     {
-        echo "Beim Bearbeiten des Eintrags ist ein Fehler aufgetreten: {$e->getMessage()}";
+        echo "<div class='error-message'>Fehler beim Bearbeiten des Eintrags: {$e->getMessage()}</div>";
         return null;
     }
 }
@@ -332,7 +332,7 @@ function addNewEntry() {
     }
     catch (Exception $e)
     {
-        echo "Beim Hinzufügen des Eintrags ist ein Fehler aufgetreten: {$e->getMessage()}";
+        echo "<div class='error-message'>Fehler beim Hinzufügen des Eintrags: {$e->getMessage()}</div>";
         return null;
     }
 }
@@ -359,7 +359,7 @@ function getSelectedTableData($selectedTable) {
     }
     catch (Exception $e)
     {
-        echo "Die ausgewählte Tabelle konnte nicht geladen werden: {$e->getMessage()}";
+        echo "<div class='error-message'>Fehler beim Laden der Tabelle: {$e->getMessage()}</div>";
         return null;
     }
 	
@@ -409,7 +409,7 @@ function getTableColumns($table) {
     }
     catch (Exception $e)
     {
-        echo "Beim Laden der Attribute von $table ist ein Fehler aufgetreten: {$e->getMessage()}";
+        echo "<div class='error-message'>Fehler beim Laden der Attribute von $table: {$e->getMessage()}</div>";
     }
 
 	return $result;						
@@ -419,8 +419,8 @@ function getTableColumns($table) {
 
 function buildHtml($data, $table, $explicitColumns = null){
     $columnNames = isset($explicitColumns) ? $explicitColumns : getColumnNames($table);
-    generateFilterForm($columnNames);      
-
+    generateFilterForm($columnNames);     
+    
     $htmlString = '<form method="post">';
     $htmlString .= '<table class="styled-table">';
     $htmlString .= '<thead>';
@@ -471,8 +471,8 @@ function executeUserSQL($statement) {
         return $tableData;
     }
     catch (Exception $e)
-    {
-        echo "Beim Ausführen des Statements ist ein Fehler aufgetreten: {$e->getMessage()}";
+    {                                                                                                       
+        echo "<div class='error-message'>Beim Ausführen des Statements ist ein Fehler aufgetreten: {$e->getMessage()}</div>";
         return null;
     }
 }

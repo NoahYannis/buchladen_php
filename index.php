@@ -24,9 +24,8 @@
     <label id="sql_statement" for="sql_input">SQL-Statement eingeben:</label><br>
     <input name="sql_input" type="text"/>     
     <button type="submit" class="button btn-confirm" name="executeUserSql"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Ausführen</button>
-    <button type="submit" name="addEntry" class="button btn-add" value="addEntry"><i class="fa fa-plus" aria-hidden="true"> Eintrag hinzufügen</i></button>
+    <button type="submit" name="addEntry" class="button btn-add" value="addEntry"><i class="fa fa-plus" aria-hidden="true"></i></button>
 </form>
-
 
 	<?php include 'controller.php'; ?>
 	</body>

@@ -22,6 +22,10 @@
 
 .btn-add {
     background-color: #800080;
+    border-color: transparent;
+    width: 40px;
+    height: 40px;
+    padding: 10px;
 }
 
 .btn-confirm {
@@ -36,12 +40,14 @@
 /* Tabellen */
 .styled-table {
     border-collapse: collapse;
-    margin: 25px 0;
     font-size: 0.9em;
     font-family: sans-serif;
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    /* width: 80%; */
+    /* margin: 25px auto; Auto-Margin für vertikale Ausrichtung */
 }
+
 
 .styled-table thead tr,
 .table thead tr {
@@ -86,3 +92,54 @@ th {
 tr:hover {
     background-color: #cee3f6;
 }
+
+.error-message {
+    color: red;
+    font-size: 16px;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+
+input {
+    width: auto; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px;
+    font-size: 14px; 
+    color: #333; 
+    background-color: #f9f9f9; 
+}
+
+input:focus {
+    outline: none; 
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+select {
+    width: auto;
+    padding: 8px;
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    font-size: 18px;
+    color: black; 
+    background-color: #f9f9f9; 
+}
+
+select:focus {
+    outline: none; 
+    border-color: #800080;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
+}
+
+
+label {
+    font-size: 24px; 
+    color: #333; 
+    margin-bottom: 5px;
+    display: block; 
+}
+
+
