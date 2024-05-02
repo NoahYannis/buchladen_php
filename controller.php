@@ -178,7 +178,7 @@ function generateForm($table, $postButtonName) {
         $formHtml .= "<input type=\"text\" id=\"$columnName\" value=\"$columnValue\" name=\"$columnName\"><br>";
     }
     
-    $formHtml .= "<button type='submit' name=\"$postButtonName\" class='button btn-confirm' style='margin-left: 0; margin-top: 20px;'><i class=\"fa fa-check-circle\"></i>&nbsp;Bestätigen</button>";
+    $formHtml .= "<button type='submit' name=\"$postButtonName\" class='button btn-confirm' style='margin-left: 0;'><i class=\"fa fa-check-circle\"></i>&nbsp;Bestätigen</button>";
     $formHtml .= "</form>";
 
     echo $formHtml;
