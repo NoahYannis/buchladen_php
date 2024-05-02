@@ -154,18 +154,11 @@ function deleteEntry($table, $primaryKey, $entry) {
 
     try 
     {
-        $result = $conn->query($statement);
+        $conn->query($statement);
     }
     catch (Exception $e) 
     {
         echo "<div class='error-message'>Fehler beim Löschen des Eintrags: {$e->getMessage()}</div>";
-    }
-    
-    
-    if ($result) {
-        echo "Der Eintrag wurde erfolgreich gelöscht!";
-    } else {
-        echo "Fehler beim Löschen des Eintrags: " . $conn->error;
     }
 }
 
@@ -206,7 +199,7 @@ function generateFilterForm($attributes) {
     }
     
     $formHtml .= "</select>";
-    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm' style='margin-right: 10px;'><i class=\"fa fa-check\"></i></button>";
+    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm' style='margin-right: 14px;'><i class=\"fa fa-check\"></i></button>";
     $formHtml .= "<button type='submit' name='addEntry' class='button btn-add' value='addEntry'><i class='fa fa-plus' aria-hidden='true'>&nbsp;Eintrag hinzufügen</i></button>";
     $formHtml .= "</div>"; 
     $formHtml .= "</form>";

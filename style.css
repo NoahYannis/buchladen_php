@@ -152,14 +152,17 @@ select:focus {
 
 
 label {
-    font-size: 24px; 
-    color: #333; 
     display: block; 
+    font-size: 24px; 
+    font-family: Arial, Helvetica, sans-serif;
+    margin-right: 8px;
+    color: #333; 
 }
 
 .centered-container {
     display: flex;
     justify-content: center;
+    align-items: center;
     margin: 10px auto;
     width: 70%;
 }
