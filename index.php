@@ -1,6 +1,8 @@
 <html>
 	<head>
 		<link rel="stylesheet" href="style.css" type="text/css">
+        <link rel="stylesheet"
+        href= "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
 	<body>
 
@@ -21,8 +23,8 @@
 <form action="" method="post">
     <label id="sql_statement" for="sql_input">SQL-Statement eingeben:</label><br>
     <input name="sql_input" type="text"/>     
-    <button type="submit" class="Button" name="executeUserSql">Ausführen</button>
-    <button type="submit" name="addEntry" class="Button" value="addEntry">Eintrag hinzufügen</button>
+    <button type="submit" class="button" name="executeUserSql">Ausführen</button>
+    <button type="submit" name="addEntry" class="button btn-primary" value="addEntry">Eintrag hinzufügen</button>
 </form>
 
 

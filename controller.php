@@ -418,20 +418,21 @@ function getTableColumns($table) {
 
 
 function buildHtml($data, $table, $explicitColumns = null){
-
     $columnNames = isset($explicitColumns) ? $explicitColumns : getColumnNames($table);
     generateFilterForm($columnNames);      
 
     $htmlString = '<form method="post">';
-    $htmlString .= '<table>'; 
+    $htmlString .= '<table class="styled-table">';
+    $htmlString .= '<thead>';
     $htmlString .= '<tr>'; 
 
     foreach ($columnNames as $columnName) {
         $htmlString .= "<th>{$columnName}</th>"; 
     }
-    
+
     $htmlString .= '</tr>'; 
-    
+    $htmlString .= '</thead>';
+
     if($data){
         foreach($data as $row){
             $primaryKey = reset($row);
@@ -440,17 +441,19 @@ function buildHtml($data, $table, $explicitColumns = null){
                 $htmlString .= '<td>' . $value . '</td>';
             }
 
-            $htmlString .= "<td><button type=\"submit\" name=\"updateButton\" value=\"$primaryKey\" class=\"Button\">Bearbeiten</button></td>";
-            $htmlString .= "<td><button type=\"submit\" name=\"deleteButton\" value=\"$primaryKey\" class=\"Button\">Löschen</button></td>";
+            $htmlString .= "<td><button type=\"submit\" name=\"updateButton\" value=\"$primaryKey\" class=\"button btn-primary\"><i class=\"fa fa-edit\"></i></button></td>";
+            $htmlString .= "<td><button type=\"submit\" name=\"deleteButton\" value=\"$primaryKey\" class=\"button btn-danger\"><i class=\"fa fa-trash\"></i></button></td>";
+
             $htmlString .= '</tr>';
         }
     }
-    
+
     $htmlString .= '</table>'; 
     $htmlString .= '</form>';
 
     return $htmlString;
 }
+
 
 
 function executeUserSQL($statement) {
