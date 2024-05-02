@@ -36,6 +36,8 @@
 .btn-confirm {
     background-color: #009879;
     border-radius: 40px;
+    margin-top: 20px; 
+    margin-left: 5px;
 }
 
 .button:hover {

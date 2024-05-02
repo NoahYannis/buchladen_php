@@ -185,7 +185,7 @@ function generateForm($table, $postButtonName) {
         $formHtml .= "<input type=\"text\" id=\"$columnName\" value=\"$columnValue\" name=\"$columnName\"><br>";
     }
     
-    $formHtml .= "<button type='submit' name=\"$postButtonName\" class='button btn-confirm'><i class=\"fa fa-check-circle-o\"></i> Bestätigen</button>";
+    $formHtml .= "<button type='submit' name=\"$postButtonName\" class='button btn-confirm' style='margin-left: 0;'><i class=\"fa fa-check-circle-o\"></i> Bestätigen</button>";
     $formHtml .= "</form>";
 
     echo $formHtml;
@@ -196,7 +196,6 @@ function generateFilterForm($attributes) {
         $_SESSION['filterAttribute'] = "";
 
     $formHtml = "<form method='post'>";
-    $formHtml .= "<br/><br>";
     $formHtml .= "<label for='select_column'>Filtern nach:</label>";
     $formHtml .= "<select name='selected_column' id='select_column'>";
     
@@ -373,7 +372,7 @@ function getSelectedTableData($selectedTable) {
 function sortData_SelectionSort($table, $filterAttribute) {
     $_SESSION['filterAttribute'] = $filterAttribute;
 
-    // SQL-Statement-Daten sortieren  falls vorhanden, ansonsten die gesamte Tabelle.
+    // SQL-Statement-Daten sortieren falls vorhanden, ansonsten die gesamte Tabelle.
     $unsortedData = $_SESSION['user_statement_data'] ?? getSelectedTableData($table);
 
     foreach($unsortedData as $row) {
