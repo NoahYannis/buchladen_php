@@ -206,7 +206,7 @@ function generateFilterForm($attributes) {
     }
     
     $formHtml .= "</select>";
-    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm'><i class=\"fa fa-check-circle-o\"></i> Anwenden</button>";
+    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm'><i class=\"fa fa-check-circle-o\"></i>&nbsp;Anwenden</button>";
     $formHtml .= "</form>";
   
     echo $formHtml;
@@ -338,7 +338,7 @@ function addNewEntry() {
 }
 
 
-// Ausgeführte SQL-Statements in der Konsole logen.
+// Ausgeführte SQL-Statements in der Konsole loggen.
 function logStatementToConsole($statement) {
     echo '<script>';
     echo 'console.log("' . $statement . '");';
@@ -372,6 +372,8 @@ function getSelectedTableData($selectedTable) {
 
 function sortData_SelectionSort($table, $filterAttribute) {
     $_SESSION['filterAttribute'] = $filterAttribute;
+
+    // SQL-Statement-Daten sortieren  falls vorhanden, ansonsten die gesamte Tabelle.
     $unsortedData = $_SESSION['user_statement_data'] ?? getSelectedTableData($table);
 
     foreach($unsortedData as $row) {
@@ -430,6 +432,8 @@ function buildHtml($data, $table, $explicitColumns = null){
         $htmlString .= "<th>{$columnName}</th>"; 
     }
 
+    $htmlString .= "<th></th>"; 
+    $htmlString .= "<th></th>"; 
     $htmlString .= '</tr>'; 
     $htmlString .= '</thead>';
 
@@ -441,7 +445,7 @@ function buildHtml($data, $table, $explicitColumns = null){
                 $htmlString .= '<td>' . $value . '</td>';
             }
 
-            $htmlString .= "<td><button type=\"submit\" name=\"updateButton\" value=\"$primaryKey\" class=\"button btn-edit\"><i class=\"fa fa-edit\"></i></button></td>";
+            $htmlString .= "<td><button type=\"submit\" name=\"updateButton\" value=\"$primaryKey\" class=\"button btn-edit\"><i class=\"fa fa-pencil fa-fw\"></i></button></td>";
             $htmlString .= "<td><button type=\"submit\" name=\"deleteButton\" value=\"$primaryKey\" class=\"button btn-delete\"><i class=\"fa fa-trash\"></i></button></td>";
 
             $htmlString .= '</tr>';

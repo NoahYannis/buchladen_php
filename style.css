@@ -1,38 +1,43 @@
-/* Buttons */
+/* Allgemeine Button-Stile */
 .btn-edit,
 .btn-delete,
 .btn-confirm,
 .btn-add {
     color: #fff;
-    border-radius: 40px;
-    padding: 10px 30px;
-    font-family: Trebuchet MS, Helvetica, sans-serif;
+    border-radius: 50%; 
+    padding: 10px; 
+    font-family: Arial, Helvetica, sans-serif;
     font-size: larger;
+    border: none; 
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center; 
 }
 
 .btn-edit {
     background-color: #0d6efd;
-    border-color: #0d6efd;
+    width: 60px;
+    height: 60px;
 }
 
 .btn-delete {
     background-color: #dc3545;
-    border-color: #dc3545;
+    width: 60px;
+    height: 60px;
 }
 
 .btn-add {
     background-color: #800080;
-    border-color: transparent;
-    width: 40px;
-    height: 40px;
-    padding: 10px;
+    width: 50px;
+    height: 50px;
 }
 
 .btn-confirm {
     background-color: #009879;
+    border-radius: 40px;
 }
 
-/* Button Hover */
 .button:hover {
     background-color: #a4a4a4;
 }
@@ -41,7 +46,7 @@
 .styled-table {
     border-collapse: collapse;
     font-size: 0.9em;
-    font-family: sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     /* width: 80%; */
@@ -61,6 +66,8 @@
 .table th,
 .table td {
     padding: 12px 15px;
+    font-family: Arial, Helvetica, sans-serif; 
+    font-size: medium;
 }
 
 .styled-table tbody tr {
@@ -68,12 +75,13 @@
 }
 
 .styled-table tbody tr:nth-of-type(even) {
-	background-color: #eaeaea;
+    background-color: #eaeaea;
 }
 
 .styled-table tbody tr:last-of-type {
     border-bottom: 2px solid #009879;
 }
+
 
 /* Allgemeine Tabellenformatierung */
 table,
@@ -96,26 +104,34 @@ tr:hover {
 .error-message {
     color: red;
     font-size: 16px;
-    font-family: 'Trebuchet MS', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     margin-top: 10px;
 }
 
 
 input {
-    width: auto; 
+    width: 400px; 
     padding: 10px; 
     border: 1px solid #ccc; 
     border-radius: 5px;
     font-size: 14px; 
     color: #333; 
     background-color: #f9f9f9; 
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 input:focus {
     outline: none; 
     border-color: #007bff;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+input::placeholder {
+    font-style: italic; 
+    font-weight: normal;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
 }
 
 select {

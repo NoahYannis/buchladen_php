@@ -21,9 +21,8 @@
 </form>
 
 <form action="" method="post">
-    <label id="sql_statement" for="sql_input">SQL-Statement eingeben:</label><br>
-    <input name="sql_input" type="text"/>     
-    <button type="submit" class="button btn-confirm" name="executeUserSql"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Ausführen</button>
+    <input name="sql_input" type="text" placeholder="SQL-Statement eingeben..."/>     
+    <button type="submit" class="button btn-confirm" name="executeUserSql"><i class="fa fa-check-circle-o" aria-hidden="true"></i>&nbsp; Ausführen</button>
     <button type="submit" name="addEntry" class="button btn-add" value="addEntry"><i class="fa fa-plus" aria-hidden="true"></i></button>
 </form>
 
