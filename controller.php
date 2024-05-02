@@ -196,6 +196,7 @@ function generateFilterForm($attributes) {
         $_SESSION['filterAttribute'] = "";
 
     $formHtml = "<form method='post'>";
+    $formHtml .= "<div style='text-align: center;' class='centered-container'>";
     $formHtml .= "<label for='select_column'>Filtern nach:</label>";
     $formHtml .= "<select name='selected_column' id='select_column'>";
     
@@ -207,10 +208,12 @@ function generateFilterForm($attributes) {
     $formHtml .= "</select>";
     $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm' style='margin-right: 10px;'><i class=\"fa fa-check\"></i></button>";
     $formHtml .= "<button type='submit' name='addEntry' class='button btn-add' value='addEntry'><i class='fa fa-plus' aria-hidden='true'>&nbsp;Eintrag hinzufügen</i></button>";
+    $formHtml .= "</div>"; 
     $formHtml .= "</form>";
-  
+
     echo $formHtml;
 }
+
 
 
 function getEntryData($table, $entryPrimaryKey) {
@@ -432,8 +435,8 @@ function buildHtml($data, $table, $explicitColumns = null){
         $htmlString .= "<th>{$columnName}</th>"; 
     }
 
-    $htmlString .= "<th></th>"; 
-    $htmlString .= "<th></th>"; 
+    $htmlString .= "<th style='width: 40px'></th>"; 
+    $htmlString .= "<th style='width: 40px'></th>"; 
 
     $htmlString .= '</tr>'; 
     $htmlString .= '</thead>';

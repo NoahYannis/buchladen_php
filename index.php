@@ -24,7 +24,7 @@
         <button type="submit" name="displayTableButton" class="button" value="buecher_has_lieferanten">buecher_has_lieferanten</button>
     </form>
 
-    <form action="" method="post">
+    <form class='centered-container' style='margin-top: 40px; margin-bottom: 40px;' action='' method='post'>
         <input name="sql_input" type="text" placeholder="SQL-Statement eingeben..." />
         <button type="submit" class="button btn-confirm" name="executeUserSql" style="width: 37.78px; height: 37.78px;"><i class="fa fa-search"></i></button>
     </form>
