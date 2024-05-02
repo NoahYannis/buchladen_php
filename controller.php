@@ -185,7 +185,7 @@ function generateForm($table, $postButtonName) {
         $formHtml .= "<input type=\"text\" id=\"$columnName\" value=\"$columnValue\" name=\"$columnName\"><br>";
     }
     
-    $formHtml .= "<button type='submit' name=\"$postButtonName\" class='button btn-confirm' style='margin-left: 0; margin-top: 20px;'><i class=\"fa fa-check-circle-o\"></i> Bestätigen</button>";
+    $formHtml .= "<button type='submit' name=\"$postButtonName\" class='button btn-confirm' style='margin-left: 0; margin-top: 20px;'><i class=\"fa fa-check-circle\"></i>&nbsp;Bestätigen</button>";
     $formHtml .= "</form>";
 
     echo $formHtml;
@@ -205,7 +205,7 @@ function generateFilterForm($attributes) {
     }
     
     $formHtml .= "</select>";
-    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm' style='margin-right: 10px;'><i class=\"fa fa-check-circle-o\"></i>&nbsp;Anwenden</button>";
+    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm' style='margin-right: 10px;'><i class=\"fa fa-check\"></i></button>";
     $formHtml .= "<button type='submit' name='addEntry' class='button btn-add' value='addEntry'><i class='fa fa-plus' aria-hidden='true'>&nbsp;Eintrag hinzufügen</i></button>";
     $formHtml .= "</form>";
   
