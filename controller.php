@@ -185,7 +185,7 @@ function generateForm($table, $postButtonName) {
         $formHtml .= "<input type=\"text\" id=\"$columnName\" value=\"$columnValue\" name=\"$columnName\"><br>";
     }
     
-    $formHtml .= "<button type='submit' name=\"$postButtonName\">Bestätigen</button>";
+    $formHtml .= "<button type='submit' name=\"$postButtonName\" class='button btn-confirm'><i class=\"fa fa-check-circle-o\"></i> Bestätigen</button>";
     $formHtml .= "</form>";
 
     echo $formHtml;
@@ -206,7 +206,7 @@ function generateFilterForm($attributes) {
     }
     
     $formHtml .= "</select>";
-    $formHtml .= "<button type='submit' name='select_sort'>Bestätigen</button>";
+    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm'><i class=\"fa fa-check-circle-o\"></i> Bestätigen</button>";
     $formHtml .= "</form>";
   
     echo $formHtml;
@@ -441,8 +441,8 @@ function buildHtml($data, $table, $explicitColumns = null){
                 $htmlString .= '<td>' . $value . '</td>';
             }
 
-            $htmlString .= "<td><button type=\"submit\" name=\"updateButton\" value=\"$primaryKey\" class=\"button btn-primary\"><i class=\"fa fa-edit\"></i></button></td>";
-            $htmlString .= "<td><button type=\"submit\" name=\"deleteButton\" value=\"$primaryKey\" class=\"button btn-danger\"><i class=\"fa fa-trash\"></i></button></td>";
+            $htmlString .= "<td><button type=\"submit\" name=\"updateButton\" value=\"$primaryKey\" class=\"button btn-edit\"><i class=\"fa fa-edit\"></i></button></td>";
+            $htmlString .= "<td><button type=\"submit\" name=\"deleteButton\" value=\"$primaryKey\" class=\"button btn-delete\"><i class=\"fa fa-trash\"></i></button></td>";
 
             $htmlString .= '</tr>';
         }
