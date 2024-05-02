@@ -167,7 +167,7 @@ function generateForm($table, $postButtonName) {
     $columnNames = getColumnNames($table);
     $entryData = !empty($_POST['updateButton']) ? getEntryData($table, $_POST['updateButton']) : null;
     
-    $formHtml = "<form method='post'>";
+    $formHtml = "<form class='custom-form' method='post'>";
     foreach ($columnNames as $columnName) 
     {
         if($columnName == getPrimaryKeyName($table))
