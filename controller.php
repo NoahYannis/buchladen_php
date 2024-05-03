@@ -199,7 +199,7 @@ function generateFilterForm($attributes) {
     }
     
     $formHtml .= "</select>";
-    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm' style='margin-right: 14px;'><i class=\"fa fa-check\"></i></button>";
+    $formHtml .= "<button type='submit' name='select_sort' class='button btn-confirm' style='margin-right: 14px;  width: 35px; height: 35px;'><i class=\"fa fa-check\"></i></button>";
     $formHtml .= "<button type='submit' name='addEntry' class='button btn-add' value='addEntry'><i class='fa fa-plus' aria-hidden='true'>&nbsp;Eintrag hinzufügen</i></button>";
     $formHtml .= "</div>"; 
     $formHtml .= "</form>";
