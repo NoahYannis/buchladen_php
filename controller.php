@@ -377,7 +377,7 @@ function getSelectedTableData($selectedTable) {
 		$tableData[] = $row;
 	}
   
-	return $tableData;	
+	return $tableData ?? null;	
 }
 
 
@@ -387,6 +387,10 @@ function sortData_SelectionSort($table, $filterAttribute) {
 
     // SQL-Statement-Daten sortieren falls vorhanden, ansonsten die gesamte Tabelle.
     $unsortedData = $_SESSION['user_statement_data'] ?? getSelectedTableData($table);
+
+    if(!$unsortedData) {
+        return null;
+    }
 
     foreach($unsortedData as $row) {
         logStatementToConsole(implode(" ", $row));
