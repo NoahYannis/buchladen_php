@@ -45,8 +45,6 @@
     margin-left: 5px;
 }
 
-
-/* Tabellen */
 .styled-table,
 table {
     border-collapse: collapse;
@@ -99,8 +97,6 @@ table tr {
     transition: background-color 0.3s ease;
 }
 
-
-
 .error-message {
     color: red;
     font-size: 16px;
@@ -110,7 +106,6 @@ table tr {
     text-align: center;
     text-shadow: 0 0 0.5px black;
 }
-
 
 input {
     width: 500px;
@@ -137,7 +132,6 @@ input {
     }
 }
 
-
 select {
     width: auto;
     padding: 8px;
@@ -159,7 +153,6 @@ select {
         box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     }
 }
-
 
 label {
     display: block;
@@ -187,9 +180,33 @@ label {
     & label {
         margin-bottom: 10px;
     }
-
 }
 
+nav {
+    justify-content: space-evenly;
+    align-items: center;
+    justify-content: center;
+    margin: 0px;
+    background-color: #800080;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    width: auto;
+}
+
+.nav-button {
+    text-align: center;
+    background-color: transparent;
+    color: white;
+
+    &:hover {
+        background-color: #333;
+        transition: background-color 0.3s ease;
+    }
+}
 
 ::selection {
     background: #800080;
