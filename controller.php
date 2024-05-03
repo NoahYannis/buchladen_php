@@ -1,6 +1,6 @@
 <?php
 
-// Informationen über die aktuelle Sitzung speichern (z.B welche Tabelle aktiv ist).
+// Informationen über die aktuelle Sitzung speichern (aktive Tabelle, Filterattribut...)
 session_start(); 
 
 // Server Settings
@@ -16,14 +16,13 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-$currentTable = isset($_SESSION['current_table']) ? $_SESSION['current_table'] : null;
-
+$currentTable = $_SESSION['current_table'] ?? null;
 
 // --------Tabelle anzeigen----------------
 if (!empty($_POST['displayTableButton'])) {
     $currentTable = $_SESSION['current_table'] = $_POST['displayTableButton'];
-    $_SESSION['user_statement_data'] = null;
-    $_SESSION['explicit_columns'] = null;
+    $_SESSION['user_statement_data'] = null; // Daten des Nutzer-Statements
+    $_SESSION['explicit_columns'] = null; // Gefilterte Spalten des Nutzer-Statements
     $_SESSION['last_edited_entry'] = null;
     displayTable($currentTable);
 }
@@ -38,7 +37,7 @@ if(!empty($_POST['sql_input'])) {
 
     if(isset($tableData)) {
         $_SESSION['user_statement_data'] = $tableData;
-        $tableName = findRegexPatternMatch($statement,'/buchladen\.(\w+)/', 1);
+        $tableName = findRegexPatternMatch($statement,'/buchladen\.(\w+)/', 1); 
         $currentTable = $_SESSION['current_table'] = $tableName;
 
         $containsExplicitColumns = !preg_match('/\s+\*\s+/', $statement);
@@ -62,12 +61,15 @@ if(!empty($_POST['sql_input'])) {
         
     }
 
-   // Erklärung des Such-Musters: Hier wird der korrekte Tabellenname gesucht.
-   // Vor dem Tabellennamen steht "buchladen", gefolgt von einem beliebigen Zeichen (.)
-   // Anschließend kommt der gesuchte Tabellenname, der aus einem oder mehreren alphanumerischen Zeichen besteht,
-   // bis zum ersten Leerzeichen.
+   /* Bedeutung der beiden Suchmuster: 
 
-   // TODO: Erklärung weitere Pattern.
+   // 1: '/buchladen\.(\w+)/' => Hier wird der Tabellen-Name extrahiert.
+   // Vor dem Tabellennamen steht "buchladen", gefolgt von einem beliebigen Zeichen (.)
+   // Anschließend kommt der gesuchte Tabellenname, der bis zum ersten Leerzeichen geht.
+ 
+   // 2: '/(?<=\bselect\s)[a-z_,\s]+(?=\s+from)/' => Hier werden die ggf. explizit erwähnten
+   // Spalten aus dem Nutzer-Statement extrahiert. (z.B SELECT spalte1, spalte2 FROM tabelle)
+   */ 
 
 // ----------------------------------------------
 }
@@ -128,24 +130,30 @@ function displayTable($table) {
 function findRegexPatternMatch($statement, $pattern, $captureGroup) {
     /*
     Hier wird mithilfe von Regex (Regular Expressions) ein bestimmtes Muster aus einem SQL-Statement
-    herausgefiltert, um  im Anschluss den Tabellenkopf für die korrekte Tabelle mit den korrekten Attributen
-    zu generieren.Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
+    herausgefiltert, um im Anschluss den Tabellenkopf für die korrekte Tabelle mit den korrekten Attributen
+    zu generieren. Mehr Infos: https://www.massiveart.com/blog/regex-zeichenfolgen-die-das-entwickler-leben-erleichtern
     */
     
     if (preg_match($pattern, $statement, $matches)) {
-        // Wenn ein Ergebnis gefunden wurde, gib das erste Vorkommen zurück
         return $matches[$captureGroup] ?? null;
     }
 }
 
 
+/**
+ * Teilt den String von Spaltennamen aus dem SQL-Statement
+ * in ein Array von einzelnen Spaltennamen auf,
+ * woraus der Tabellen-Kopf generiert wird.
+ *
+ * @param string $columnsString Der String von Spaltennamen, der aufgeteilt werden soll.
+ * @return array Das Array von einzelnen Spaltennamen.
+ */
 function splitColumns($columnsString) {
-    // Entferne Leerzeichen am Anfang und Ende des Strings und trenne die Spalten
     $columnsArray = explode(',', trim($columnsString));
-    // Entferne Leerzeichen aus den Spaltennamen
     $columnsArray = array_map('trim', $columnsArray);
     return $columnsArray;
 }
+
 
 function deleteEntry($table, $primaryKey, $entry) {
     global $conn;
@@ -163,6 +171,13 @@ function deleteEntry($table, $primaryKey, $entry) {
 }
 
 
+/**
+ * Generiert das Formular für das Hinzufügen oder Bearbeiten von Einträgen in einer Tabelle.
+ *
+ * @param string $table Der Name der Tabelle.
+ * @param string $postButtonName Der Name des Submit-Buttons.
+ * @return void
+ */
 function generateForm($table, $postButtonName) {
     $columnNames = getColumnNames($table);
     $entryData = !empty($_POST['updateButton']) ? getEntryData($table, $_POST['updateButton']) : null;
@@ -170,8 +185,9 @@ function generateForm($table, $postButtonName) {
     $formHtml = "<form class='custom-form' method='post'>";
     foreach ($columnNames as $columnName) 
     {
-        if($columnName == getPrimaryKeyName($table))
-        continue; // Primärschlüssel darf nicht manuell gesetzt oder bearbeitet werden.
+        if($columnName == getPrimaryKeyName($table)) {
+            continue; // Primärschlüssel darf nicht manuell gesetzt oder bearbeitet werden.
+        }
     
         $columnValue = isset($entryData[0][$columnName]) ? $entryData[0][$columnName] : ''; // Wert der aktuellen Spalte aus den abgerufenen Daten
         $formHtml .= "<label for=\"$columnName\">$columnName:</label>";
@@ -184,6 +200,7 @@ function generateForm($table, $postButtonName) {
     echo $formHtml;
 }
 
+// Generiert das Filter-Element für die Sortierung der Tabelle
 function generateFilterForm($attributes) {
     if(!isset($_SESSION['filterAttribute']))
         $_SESSION['filterAttribute'] = "";
@@ -208,7 +225,7 @@ function generateFilterForm($attributes) {
 }
 
 
-
+// Liefert die Daten eines Eintrags aus einer Tabelle
 function getEntryData($table, $entryPrimaryKey) {
     global $conn;
 
@@ -234,7 +251,7 @@ function getEntryData($table, $entryPrimaryKey) {
 }
 
 
-
+// Liefert die Spaltennamen einer Tabelle
 function getColumnNames($tableName) {
     global $conn;
     $columnNames = [];
@@ -267,13 +284,9 @@ function updateEntry($entryPrimaryKey) {
     $statement = "UPDATE buchladen.$currentTable SET ";
 
     foreach ($columnNames as $columnName) {
-        // Überprüfe, ob der Spaltenname kein reservierter Name wie 'updateButton' ist
         if ($columnName !== 'updateButton') {
-            // Überprüfe, ob ein Wert für diesen Spaltennamen im POST-Array vorhanden ist
             if (isset($_POST[$columnName])) {
-                // Hole den Wert aus dem POST-Array
                 $columnValue = $_POST[$columnName];
-                // Füge den Spaltennamen und den Wert der SET-Klausel hinzu
                 $statement .= "$columnName = '$columnValue', ";
             }
         }
@@ -306,18 +319,19 @@ function addNewEntry() {
     $columnNames = getColumnNames($currentTable);
     $statement = "INSERT INTO buchladen.$currentTable (";
     $values = "VALUES (";
+
     foreach ($columnNames as $columnName) {
-        // Überprüfe, ob der Wert für dieses Feld im POST-Array vorhanden ist
         if (isset($_POST[$columnName])) {
             $columnValue = $_POST[$columnName];
-            // Füge den Spaltennamen und den Wert dem SQL-Statement hinzu
             $statement .= "$columnName, ";
             $values .= "'$columnValue', ";
         }
     }
+
     // Entferne das letzte Komma und Leerzeichen von den Strings
     $statement = rtrim($statement, ", ") . ") ";
     $values = rtrim($values, ", ") . ")";
+
     // Füge die Spaltennamen und Werte zum endgültigen SQL-Statement hinzu
     $finalStatement = $statement . $values;
     logStatementToConsole($finalStatement);
@@ -366,6 +380,8 @@ function getSelectedTableData($selectedTable) {
 	return $tableData;	
 }
 
+
+// Sortiert die Daten einer Tabelle nach einem bestimmten Attribut
 function sortData_SelectionSort($table, $filterAttribute) {
     $_SESSION['filterAttribute'] = $filterAttribute;
 
@@ -392,6 +408,7 @@ function sortData_SelectionSort($table, $filterAttribute) {
 		$unsortedData[$i] = $dreieck;
 		}
 	}
+
 	return $unsortedData;	
 }
 
@@ -414,8 +431,16 @@ function getTableColumns($table) {
 }
 
 
-
+/**
+ * Erstellt die HTML-Tabelle zum Anzeigen von Daten.
+ *
+ * @param array $data Die Daten, die in der Tabelle angezeigt werden sollen.
+ * @param string $table Der Name der Tabelle.
+ * @param array|null $explicitColumns Im SQL-Statement explizit angegebene Spalten falls vorhanden.
+ * @return string Der HTML-String, der die Tabelle repräsentiert.
+ */
 function buildHtml($data, $table, $explicitColumns = null){
+
     $columnNames = isset($explicitColumns) ? $explicitColumns : getColumnNames($table);
     generateFilterForm($columnNames);     
     
@@ -456,7 +481,6 @@ function buildHtml($data, $table, $explicitColumns = null){
 }
 
 
-
 function executeUserSQL($statement) {
     global $conn;
     logStatementToConsole($statement);
@@ -478,7 +502,7 @@ function executeUserSQL($statement) {
     }
 }
 
-
+// Liefert den Primärschlüssel einer Tabelle
 function getPrimaryKeyName($table) {
     return ($primaryKey = getTableColumns($table)->fetch_assoc()) ? $primaryKey['COLUMN_NAME'] : null;
 }
