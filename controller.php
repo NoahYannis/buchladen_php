@@ -189,7 +189,7 @@ function generateForm($table, $postButtonName) {
             continue; // Primärschlüssel darf nicht manuell gesetzt oder bearbeitet werden außer bei N-zu-M-Tabellen.
         }
     
-        $columnValue = isset($entryData[0][$columnName]) ? $entryData[0][$columnName] : ''; // Wert der aktuellen Spalte aus den abgerufenen Daten
+        $columnValue = $entryData[0][$columnName] ?? ''; // Wert der aktuellen Spalte aus den abgerufenen Daten
         $formHtml .= "<label for=\"$columnName\">$columnName:</label>";
         $formHtml .= "<input type=\"text\" id=\"$columnName\" value=\"$columnValue\" name=\"$columnName\"><br>";
     }
@@ -489,9 +489,16 @@ function executeUserSQL($statement) {
     global $conn;
     logStatementToConsole($statement);
 
+    // Überprüfe, ob das Benutzer-Statement UPDATE oder DELETE enthält => es dürfen hier keine Einträge gelöscht oder verändert werden
+    if (strpos(strtoupper($statement), 'UPDATE') !== false || strpos(strtoupper($statement), 'DELETE') !== false) {
+        echo "<div class='error-message'>Das Statement enthält UPDATE oder DELETE und kann nicht ausgeführt werden.</div>";
+        return null;
+    }
+
     try 
     {
         $result = $conn->query($statement);
+        
         $tableData = [];
         while ($row = $result->fetch_assoc()) {
             $tableData[] = $row;
