@@ -33,7 +33,7 @@ if (!empty($_POST['displayTableButton'])) {
 // --------Nutzer-SQL-Statements verarbeiten-----
 if(!empty($_POST['sql_input'])) {
     $statement = $_POST['sql_input'];   
-    $tableData = executeUserSQL($statement);
+    $tableData = executeUserSelectStatement($statement);
 
     if(isset($tableData)) {
         $_SESSION['user_statement_data'] = $tableData;
@@ -485,7 +485,7 @@ function buildHtml($data, $table, $explicitColumns = null){
 }
 
 
-function executeUserSQL($statement) {
+function executeUserSelectStatement($statement) {
     global $conn;
     logStatementToConsole($statement);
 
