@@ -155,9 +155,25 @@ function splitColumns($columnsString) {
 }
 
 
+
 function deleteEntry($table, $primaryKey, $entry) {
     global $conn;
-    $statement = "DELETE FROM buchladen.$table WHERE $primaryKey = '$entry'";
+    $columns = getColumnNames($table);
+    $data = getEntryData($table, $entry);
+
+    if (empty($data)) {
+        echo "<div class='error-message'>Keine Daten gefunden für den Eintrag mit dem Primärschlüssel $entry.</div>";
+        return;
+    }
+
+    $values = [];
+    foreach ($columns as $column) {
+        $columnValue = $data[0][$column]; // Annahme: Es wird nur ein Datensatz zurückgegeben
+        $values[] = "$column = '$columnValue'";
+    }
+    
+    $whereClause = implode(' AND ', $values);
+    $statement = "DELETE FROM buchladen.$table WHERE $whereClause";
     logStatementToConsole($statement);
 
     try 
@@ -491,7 +507,7 @@ function executeUserSelectStatement($statement) {
 
     // Überprüfe, ob das Benutzer-Statement UPDATE oder DELETE enthält => es dürfen hier keine Einträge gelöscht oder verändert werden
     if (strpos(strtoupper($statement), 'UPDATE') !== false || strpos(strtoupper($statement), 'DELETE') !== false) {
-        echo "<div class='error-message'>Das Statement enthält UPDATE oder DELETE und kann nicht ausgeführt werden.</div>";
+        echo "<div class='error-message'>Das Statement enthält UPDATE oder DELETE und kann daher nicht ausgeführt werden.</div>";
         return null;
     }
 
