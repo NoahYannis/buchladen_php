@@ -28,10 +28,10 @@
     </nav>
 
     <!-- Eingabe für das SQL-Statement -->
-    <form class='centered-container' style='margin-top: 40px; margin-bottom: 40px;' action='' method='post'>
-        <input name="sql_input" type="text" placeholder="SQL-Statement eingeben..." />
-        <button type="submit" class="button btn-confirm" name="executeUserSql" style="width: 37.78px; height: 37.78px;"><i class="fa fa-search"></i></button>
-    </form>
+        <form class='centered-container' style='margin-top: 40px; margin-bottom: 40px;' action='' method='post'>
+            <input name="sql_input" type="text" placeholder="SQL-Statement eingeben..." />
+            <button type="submit" class="button btn-confirm" name="executeUserSql" style="width: 37.78px; height: 37.78px;"><i class="fa fa-search"></i></button>
+        </form>
     
     <?php include 'controller.php'; ?> 
 </body>

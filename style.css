@@ -21,6 +21,14 @@
         border: 2px solid black;
         border-color: black;
     }
+
+    &:focus {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+        transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+        border: 2px solid black;
+        border-color: black;
+    }
 }
 
 body{
@@ -211,10 +219,9 @@ nav {
         flex-grow: 1;
         border: 2px solid black;
 
-
         &:hover {
-            background-color: CBC3E3;
-            transition: background-color 0.3s ease;
+            background-color: #CBC3E3;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
     }
 
