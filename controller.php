@@ -255,7 +255,7 @@ function getEntryData($table, $entryPrimaryKey) {
             $tableData[] = $row;
         }
       
-        return $tableData;
+        return $tableData ?? null;
             
     } 
     catch (Exception $e) 
