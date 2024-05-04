@@ -185,8 +185,8 @@ function generateForm($table, $postButtonName) {
     $formHtml = "<form class='custom-form' method='post'>";
     foreach ($columnNames as $columnName) 
     {
-        if($columnName == getPrimaryKeyName($table)) {
-            continue; // Primärschlüssel darf nicht manuell gesetzt oder bearbeitet werden.
+        if($columnName == getPrimaryKeyName($table) && !preg_match('/(?<=_)has(?=_)/', $table)) {
+            continue; // Primärschlüssel darf nicht manuell gesetzt oder bearbeitet werden außer bei N-zu-M-Tabellen.
         }
     
         $columnValue = isset($entryData[0][$columnName]) ? $entryData[0][$columnName] : ''; // Wert der aktuellen Spalte aus den abgerufenen Daten
